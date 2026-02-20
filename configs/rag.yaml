@@ -1,0 +1,10 @@
+vector_store:
+  persist_directory: /Users/jaehyuntak/Desktop/gangnam-1st/local_chroma_db
+  embedding_model: text-embedding-3-small
+  language: korean
+
+llm:
+  model: gpt-4.1-mini
+
+retrieval:
+  k: 3

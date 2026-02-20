@@ -1,0 +1,5 @@
+https://arxiv.org/pdf/2401.15884
+https://docs.smith.langchain.com/reference/sdk_reference/langchain_evaluators
+https://greeksharifa.github.io/public/img/2021-12-19-CLIP/01a.png
+https://python.langchain.com/docs/how_to/MultiQueryRetriever/
+https://smith.langchain.com/o/763d64ba-4fe5-4f9e-8ad9-dda697eda390/datasets/507864f4-df98-496b-9806-ee21d534558e/compare?selectedSessions=012c9bb8-4df4-455e-b34a-8a6505f25ef9

@@ -1,0 +1,5 @@
+- [Self-RAG 논문 PDF로, 검색·생성·자기반성을 결합한 RAG 개선 방법을 연구할 때 참고할 자료](https://arxiv.org/pdf/2310.06117)
+- [IT 사이드프로젝트 커뮤니티 카페로, 실제 개발 사례와 운영 경험을 RAG 적용 아이디어 탐색에 활용 가능](https://cafe.naver.com/itsideproject)
+- [LangGraph의 SQLite 체크포인트 구현 코드로, 에이전트 상태 영속화와 복구 흐름을 설계할 때 참고](https://github.com/langchain-ai/langgraph/tree/main/libs/checkpoint-sqlite)
+- [langgraph-checkpoint-sqlite 패키지 배포 페이지로, 버전·설치 방법·의존성 확인에 유용한 공식 메타정보 제공](https://pypi.org/project/langgraph-checkpoint-sqlite/)
+- [LangSmith 서비스로, LLM 체인 추적·평가·실험 비교를 통해 RAG 품질 개선과 회귀 점검에 활용](https://smith.langchain.com)

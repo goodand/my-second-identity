@@ -1,0 +1,349 @@
+# RAG URL Knowledge Base
+
+- ver: `v2.6.0`
+- generated_at: `2026-02-19`
+- updated_at: `2026-02-20` (v2.6.0: #07 FiD 교체, #01 HyDE pseudocode 3번 줄 수정)
+- format: `- [한 줄 설명](URL)`
+- generation_method: `8 codex agents parallel`
+- total_urls: `41`
+- paper_like_urls: `8`
+- other_urls: `33`
+
+## Document Map
+
+| 문서 | 역할 |
+|------|------|
+| [PLAN.md](PLAN.md) | 실행 계획 · 단계 · 에이전트 운영 규칙 |
+| `RAG_URL_KNOWLEDGE_BASE.md` (이 파일) | 논문 8편 + 참고 URL 33개 인덱스 |
+| [IMAGE_STRUCTURE_GRAPHS.md](IMAGE_STRUCTURE_GRAPHS.md) | 논문/이미지 기반 다이어그램 8개 |
+| [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md) | 이미지 URL ↔ 노트북 소스 매핑 |
+
+## Table of Contents
+- [Paper-like URLs](#paper-like-urls)
+- [Other RAG References URLs](#other-rag-references-urls)
+
+## Paper-like URLs
+- [HyDE 기반 제로샷 밀집검색 기법을 설명해 RAG 초기 검색 성능 개선에 참고할 논문](https://arxiv.org/abs/2212.10496)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A01`
+  - cross_ref: 다이어그램 [#04 HyDE](IMAGE_STRUCTURE_GRAPHS.md#04-hyde) · 실행 단계 [Phase 3 검색 개선](PLAN.md#execution-phases) · 관련 논문 [#05 DMQR-RAG](#05-dmqr-rag)
+  - taxonomy: [[쿼리 확장 검색]] · Axis A
+  - key_idea: 정답 유사 가상 문서를 LLM으로 먼저 생성해 dense retrieval의 recall을 높인다.
+  - execution_conditions: 품질 좋은 생성모델, 임베딩 모델 정합성, 쿼리당 추가 생성 비용 허용.
+  - pseudocode_3lines:
+    - 1) 질의 q를 입력받아 LLM으로 가상 문서 d_hypo를 생성한다.
+    - 2) d_hypo를 임베딩해 벡터 v_hypo를 만들고, 코퍼스 임베딩들과 유사도 검색해 상위 k 문서 D_top을 찾는다.
+    - 3) D_top을 컨텍스트로 사용해 최종 답변 a를 생성한다. (가상 문서 임베딩만 사용; 원 쿼리 임베딩은 검색에 사용하지 않음)
+- [장문 맥락에서 LLM이 중요한 정보를 놓치는 현상을 분석한 RAG 성능 개선 참고 논문](https://arxiv.org/abs/2305.14283)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A02`
+  - cross_ref: 실행 단계 [Phase 2 평가 하네스](PLAN.md#execution-phases) · [Phase 3 검색 개선](PLAN.md#execution-phases) · 관련 논문 [#04 RAG Survey](#04-rag-survey-2405.07437)
+  - taxonomy: [[위치 인식 주입]] · Axis B
+  - key_idea: 이 논문은 긴 컨텍스트에서 정보 위치에 따른 성능 저하(U자형)를 보여주는 진단 연구이며, 신규 알고리즘을 제안하지 않는다.
+  - execution_conditions: 동일 질의/정답으로 근거 위치만 바꾼 평가셋, 위치별 정확도 측정, U자형 곡선 재현 실험.
+  - pseudocode_3lines:
+    - 1) 문서 C와 질의 q, 정답 y*를 고정한 뒤 근거 문단 위치 p만 앞/중간/뒤로 바꾼 평가 샘플들을 생성한다.
+    - 2) 각 샘플에서 모델 응답 y를 계산하고 정확도 acc(p)를 위치별로 집계한다.
+    - 3) acc(p) 곡선을 시각화해 middle 구간 성능 저하가 있는지 검증하고, 재배치/요약 전략의 필요성을 도출한다.
+- [RAG 성능 향상 전략을 벤치마킹할 수 있는 arXiv 연구 논문 초록 페이지](https://arxiv.org/abs/2310.11511)
+  - sources: `LLM_025_LangGraph_SelfRAG.ipynb`
+  - agent: `A03`
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](PLAN.md#execution-phases) · 관련 논문 [#07 FiD](#07-fid-2007.01282) · [#08 CRAG](#08-crag-2401.15884)
+  - taxonomy: [[자기평가 검색]] · Axis A
+  - key_idea: 모델이 retrieval 필요 여부와 근거 품질을 자기평가하며 생성/검색 루프를 동적으로 제어한다.
+  - execution_conditions: reflection 토큰/헤드 구현, 단계별 라우팅 로직, 실패 시 fallback 경로.
+  - pseudocode_3lines:
+    - 1) 입력 x에 대해 y를 단계적으로 생성하면서 매 단계마다 반성 토큰 r_t(검색필요도, 근거충분도, 중단여부)를 예측한다.
+    - 2) if r_t.검색필요도 > τ then 문서 D_t ← Retrieve(x, y_{<t}) 하고 y_t ← Generate(x, y_{<t}, D_t) else y_t ← Generate(x, y_{<t}) 를 수행한다.
+    - 3) if r_t.중단여부 = True or 길이 한계 도달 then 종료하고, 최종 출력은 반성 점수와 근거 일치도를 최대화하도록 선택/재순위화한다.
+- [RAG 개선 아이디어 탐색에 유용한 최신 연구 논문 초록 페이지](https://arxiv.org/abs/2405.07437)
+  - sources: `LLM_008_RAG_Evalution.ipynb`, `LLM_013_Generation_Metrics.ipynb`, `LLM_014_LLM-as-Judge-LangChain.ipynb`, `LLM_015_Langfuse_Evaluation.ipynb`
+  - agent: `A04`
+  - cross_ref: 다이어그램 [#08 RAG 평가 파이프라인](IMAGE_STRUCTURE_GRAPHS.md#08-rag-evaluationbenchmark-pipeline) · 실행 단계 [Phase 2 평가 하네스](PLAN.md#execution-phases) · 관련 논문 [#02 Lost in the Middle](#02-lost-in-the-middle-2305.14283)
+  - taxonomy: [[RAG 평가 파이프라인]] · [[압축 주입]] · Axis B
+  - key_idea: 검색-응답 품질을 단일 점수 대신 다중 축(정확성/근거성/관련성)으로 평가해 회귀를 줄인다.
+  - execution_conditions: 평가셋 정답/근거 준비, 자동 평가 파이프라인, metric gate 임계치 정의.
+  - pseudocode_3lines:
+    - 1) 각 샘플(q, GT)에 대해 `R ← 검색기(q)`, `G ← 생성기(q, R)`, `A ← 추가요구(지연시간·강건성·비용 등)`을 기록한다.
+    - 2) `점수_검색 ← 평가(R, GT, [관련성, 정확성])`, `점수_생성 ← 평가(G, GT, R, [충실성, 정답성, 관련성])`를 계산한다.
+    - 3) `최종진단 ← 집계(점수_검색, 점수_생성, A)` 후 병목 컴포넌트를 식별하고 개선 우선순위를 출력한다.
+- [다중 질의 재작성으로 검색·응답 성능을 높이는 DMQR-RAG 논문](https://arxiv.org/abs/2411.13154)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A05`
+  - cross_ref: 다이어그램 [#03 Multi-Query/RAG-Fusion](IMAGE_STRUCTURE_GRAPHS.md#03-multi-query--rag-fusion--dmqr-rag) · 실행 단계 [Phase 3 검색 개선](PLAN.md#execution-phases) · 관련 논문 [#01 HyDE](#01-hyde-2212.10496)
+  - taxonomy: [[쿼리 확장 검색]] · Axis A
+  - key_idea: 한 질의를 여러 관점 질의로 분해/재작성해 검색 후보 다양성과 커버리지를 확장한다.
+  - execution_conditions: query rewrite 프롬프트 템플릿, 중복 제거/합치기 전략, latency 예산 관리.
+  - note: 전략집합 S 구성(일반/키워드/의사답변/핵심내용추출)은 원문 대조 전까지 가설적 구현안으로 취급한다.
+  - pseudocode_3lines:
+    - 1) 입력 질의 q에 대해 전략집합 S={일반재작성, 키워드재작성, 의사답변재작성, 핵심내용추출재작성}을 정의하고, 선택기 g(q)로 사용할 전략 부분집합 S*를 고른다.
+    - 2) 각 s∈S*에 대해 재작성 질의 q_s←Rewrite(q,s)를 생성하고, 모든 q_s로 병렬 검색해 문서 후보 D를 수집한 뒤 중복 제거·재순위화한다.
+    - 3) 상위 문서 D_top과 원질의 q를 LLM에 입력해 최종 답변 a를 생성하고, 성능/비용 신호로 g와 재작성 프롬프트를 주기적으로 업데이트한다.
+- [RAG 성능 향상을 위한 검색-생성 결합 방법과 평가 관점을 정리한 참고 논문](https://arxiv.org/pdf/2205.10625)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A06`
+  - cross_ref: 실행 단계 [Phase 1 베이스라인](PLAN.md#execution-phases)
+  - taxonomy: [[단일 벡터 검색]] · Axis A (baseline)
+  - key_idea: 생성 모델 단독보다 외부 비지식 메모리(검색) 결합이 사실성/최신성에서 유리함을 체계적으로 제시한다.
+  - execution_conditions: 검색 인덱스 품질, 도메인별 문서 최신화, 생성 단계 인용 규칙 설정.
+  - note: 수식 중심 RAG 공식화는 Lewis et al. (2020) 계열과 겹친다. 본 항목은 구현 관점의 개념 요약으로 사용한다.
+  - pseudocode_3lines:
+    - 1) 질의 q로 검색기에서 상위 k 문서 D를 가져오고, 문서별 관련도 점수 w를 계산한다.
+    - 2) 생성기는 (q, D, w)를 입력으로 근거 우선 컨텍스트를 구성해 응답 후보를 생성한다.
+    - 3) 후보 응답을 근거 일치도와 정답성으로 재평가해 최종 출력 y를 선택한다.
+- [여러 검색 문서를 디코더에서 통합 처리해 오픈도메인 QA 성능을 높이는 FiD 논문](https://arxiv.org/abs/2007.01282)
+  - sources: `LLM_012_Rerank_Compression.ipynb`
+  - agent: `A07`
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](PLAN.md#execution-phases) · 관련 논문 [#03 Self-RAG](#03-self-rag-2310.11511) · [#08 CRAG](#08-crag-2401.15884)
+  - taxonomy: [[압축 주입]] · Axis B
+  - note: #03(Self-RAG abstract)과 동일 논문 중복 방지를 위해 교체. FiD는 multi-doc 검색-생성 결합의 기초 참조 논문.
+  - key_idea: 각 검색 문서를 독립적으로 인코딩 후 디코더에서 하나의 어텐션 소스로 통합해, 문서 수 증가에도 메모리 효율을 유지한다.
+  - execution_conditions: dense retriever(DPR 등), 문서별 독립 인코딩, seq2seq 생성기, GPU 메모리 예산 관리.
+  - pseudocode_3lines:
+    - 1) 질의 q로 상위 k 문서 {d1…dk}를 검색하고, 각 [q;di] 쌍을 인코더에 독립적으로 입력해 k개 표현을 얻는다.
+    - 2) k개 인코딩 표현을 concat해 디코더의 cross-attention 소스로 공급하고, 단일 생성 맥락으로 통합한다.
+    - 3) 디코더가 통합 맥락에서 최종 답변 y를 자기회귀적으로 생성하고 beam search로 최적 후보를 선택한다.
+- [RAG 성능 개선과 평가 방법을 다루는 최신 연구 논문 PDF 자료](https://arxiv.org/pdf/2401.15884)
+  - sources: `LLM_026_LangGraph_CRAG.ipynb`
+  - agent: `A08`
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](PLAN.md#execution-phases) · 관련 논문 [#03 Self-RAG](#03-self-rag-2310.11511) · [#07 FiD](#07-fid-2007.01282)
+  - taxonomy: [[교정 검색]] · Axis A
+  - key_idea: retrieval 결과를 사전 검증/보정(corrective)해 나쁜 문맥 유입을 줄이고 답변 신뢰도를 높인다.
+  - execution_conditions: retrieval quality classifier, low-quality 분기(web/alt retriever), 검증 실패시 abstain 정책.
+  - pseudocode_3lines:
+    - 1) d←검색기질의(q); s←관련성평가기(q,d); if s<τ then d←d∪웹검색(q)
+    - 2) c←지식정제기(q,d)  # 오프토픽/오류 문서 제거 및 핵심 근거만 압축
+    - 3) a←생성기(q,c); return a
+
+## Other RAG References URLs
+- [KRX ETF 상세검색 통계 화면으로 금융 도메인 RAG용 기준 데이터 수집에 활용 가능](http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020103010901)
+  - sources: `LLM_020_ETF_Text2SQL.ipynb`
+  - agent: `A01`
+  - pseudocode_3lines:
+    - 1) 도메인 소스에서 원천 데이터를 수집하고 스키마 표준화 파이프라인으로 정규화한다.
+    - 2) 최신성/결측/중복 검증을 통과한 레코드만 인덱싱 대상 코퍼스로 반영한다.
+    - 3) 질의 시 메타 필터와 함께 검색해 근거 출처를 명시한 답변을 생성한다.
+- [ARIRANG ETF 상품 정보와 운용사 공시를 확인해 금융 도메인 RAG 데이터 소스로 활용 가능한 사이트](http://www.arirangetf.com/)
+  - sources: `LLM_020_ETF_Text2SQL.ipynb`
+  - agent: `A02`
+  - pseudocode_3lines:
+    - 1) 도메인 소스에서 원천 데이터를 수집하고 스키마 표준화 파이프라인으로 정규화한다.
+    - 2) 최신성/결측/중복 검증을 통과한 레코드만 인덱싱 대상 코퍼스로 반영한다.
+    - 3) 질의 시 메타 필터와 함께 검색해 근거 출처를 명시한 답변을 생성한다.
+- [금융 도메인 RAG 크롤링·정규화 품질을 점검하기 좋은 한국 ETF 공식 사이트](http://www.kindexetf.com)
+  - sources: `LLM_020_ETF_Text2SQL.ipynb`
+  - agent: `A03`
+  - pseudocode_3lines:
+    - 1) 도메인 소스에서 원천 데이터를 수집하고 스키마 표준화 파이프라인으로 정규화한다.
+    - 2) 최신성/결측/중복 검증을 통과한 레코드만 인덱싱 대상 코퍼스로 반영한다.
+    - 3) 질의 시 메타 필터와 함께 검색해 근거 출처를 명시한 답변을 생성한다.
+- [도메인 분류·노이즈 판별 실험에 활용 가능한 금융 ETF 공식 사이트](http://www.kindexetf.com/)
+  - sources: `LLM_020_ETF_Text2SQL.ipynb`
+  - agent: `A04`
+  - pseudocode_3lines:
+    - 1) 도메인 소스에서 원천 데이터를 수집하고 스키마 표준화 파이프라인으로 정규화한다.
+    - 2) 최신성/결측/중복 검증을 통과한 레코드만 인덱싱 대상 코퍼스로 반영한다.
+    - 3) 질의 시 메타 필터와 함께 검색해 근거 출처를 명시한 답변을 생성한다.
+- [LangSmith API 엔드포인트 문서로 RAG 실행 추적·평가 자동화에 활용](https://api.smith.langchain.com)
+  - sources: `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A05`
+  - pseudocode_3lines:
+    - 1) 샘플 입력 집합 X를 준비하고 trace/eval 실행 설정 cfg를 로드한다.
+    - 2) 각 x∈X에 대해 run(x) 결과를 수집하고 evaluator로 점수 M(x)를 계산한다.
+    - 3) 임계치 미달 케이스를 실패 큐에 적재하고 리포트/대시보드로 회귀를 추적한다.
+- [LangSmith 데이터셋 API로 RAG 평가용 테스트셋 생성·관리 자동화 방법을 확인하는 문서](https://api.smith.langchain.com/datasets)
+  - sources: `LLM_013_Generation_Metrics.ipynb`
+  - agent: `A06`
+  - pseudocode_3lines:
+    - 1) 샘플 입력 집합 X를 준비하고 trace/eval 실행 설정 cfg를 로드한다.
+    - 2) 각 x∈X에 대해 run(x) 결과를 수집하고 evaluator로 점수 M(x)를 계산한다.
+    - 3) 임계치 미달 케이스를 실패 큐에 적재하고 리포트/대시보드로 회귀를 추적한다.
+- [IT 사이드프로젝트 커뮤니티 카페로, 실제 개발 사례와 운영 경험을 RAG 적용 아이디어 탐색에 활용 가능](https://cafe.naver.com/itsideproject)
+  - sources: `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A07`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [LangChain 평가기 SDK API와 사용 방식을 정리한 공식 레퍼런스 문서](https://docs.smith.langchain.com/reference/sdk_reference/langchain_evaluators)
+  - sources: `LLM_013_Generation_Metrics.ipynb`, `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A08`
+  - pseudocode_3lines:
+    - 1) 샘플 입력 집합 X를 준비하고 trace/eval 실행 설정 cfg를 로드한다.
+    - 2) 각 x∈X에 대해 run(x) 결과를 수집하고 evaluator로 점수 M(x)를 계산한다.
+    - 3) 임계치 미달 케이스를 실패 큐에 적재하고 리포트/대시보드로 회귀를 추적한다.
+- [Chroma 메타데이터 필터링 사용법으로 조건 기반 검색 정밀도 향상과 평가 실험 설계에 유용](https://docs.trychroma.com/docs/querying-collections/metadata-filtering)
+  - sources: `LLM_007_Housing_FAQ_Bot.ipynb`
+  - agent: `A01`
+  - pseudocode_3lines:
+    - 1) 원질의 q를 입력받아 rewrite/decompose 함수로 확장 질의 집합 Q를 생성한다.
+    - 2) 각 q_i∈Q로 병렬 검색해 후보 문서 D를 합치고 중복 제거 후 재순위화한다.
+    - 3) 상위 문맥 D_top으로 최종 답변을 생성하고 품질/지연 지표를 로그한다.
+- [예시용 도메인으로 링크 처리, 크롤링, 예외 케이스 점검에 쓰기 좋은 기준 페이지](https://example.com)
+  - sources: `LLM_021_LangGraph_MessageGraph.ipynb`
+  - agent: `A02`
+  - pseudocode_3lines:
+    - 1) 테스트 질의 q를 더미 엔드포인트로 보내 파서/크롤러 정상 동작을 확인한다.
+    - 2) 실패 케이스(타임아웃/포맷오류/빈본문)를 주입해 예외 처리 경로를 검증한다.
+    - 3) 파이프라인이 안정화되면 실제 도메인 URL로 교체해 재실행한다.
+- [링크 수집 파이프라인의 예외 처리와 더미 문서 대응을 검증하는 테스트용 도메인](https://example.net)
+  - sources: `LLM_021_LangGraph_MessageGraph.ipynb`
+  - agent: `A03`
+  - pseudocode_3lines:
+    - 1) 테스트 질의 q를 더미 엔드포인트로 보내 파서/크롤러 정상 동작을 확인한다.
+    - 2) 실패 케이스(타임아웃/포맷오류/빈본문)를 주입해 예외 처리 경로를 검증한다.
+    - 3) 파이프라인이 안정화되면 실제 도메인 URL로 교체해 재실행한다.
+- [RAG 파이프라인 예시 문서용으로 쓰기 좋은 표준 더미 웹페이지](https://example.org)
+  - sources: `LLM_021_LangGraph_MessageGraph.ipynb`
+  - agent: `A04`
+  - pseudocode_3lines:
+    - 1) 테스트 질의 q를 더미 엔드포인트로 보내 파서/크롤러 정상 동작을 확인한다.
+    - 2) 실패 케이스(타임아웃/포맷오류/빈본문)를 주입해 예외 처리 경로를 검증한다.
+    - 3) 파이프라인이 안정화되면 실제 도메인 URL로 교체해 재실행한다.
+- [경업·겸업금지 설명 블로그로 비정형 한국어 웹문서 검색 성능 점검용](https://fetp.tistory.com/42)
+  - sources: `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A05`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [반정형·멀티모달 문서를 활용한 RAG 파이프라인 구현 예제를 제공하는 LangChain 노트북](https://github.com/langchain-ai/langchain/blob/5dbe456aae755e3190c46316102e772dfcb6e148/cookbook/Semi_structured_and_multi_modal_RAG.ipynb)
+  - sources: `LLM_031_Multimodal_RAG_Part1[Answer].ipynb`, `LLM_032_Multimodal_RAG_Part2[Answer].ipynb`
+  - agent: `A06`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [LangGraph의 SQLite 체크포인트 구현 코드로, 에이전트 상태 영속화와 복구 흐름을 설계할 때 참고](https://github.com/langchain-ai/langgraph/tree/main/libs/checkpoint-sqlite)
+  - sources: `LLM_022_LangGraph_Memory.ipynb`
+  - agent: `A07`
+  - pseudocode_3lines:
+    - 1) 상태 S와 메시지 히스토리 H를 로드하고 실행 노드 n을 결정한다.
+    - 2) 각 노드 실행 후 S,H를 체크포인트에 저장해 중단/복구 가능성을 보장한다.
+    - 3) 종료 조건 충족 시 최종 응답과 실행 트레이스를 반환한다.
+- [CLIP 임베딩 유사도 개념을 시각적으로 설명하는 참고 이미지](https://greeksharifa.github.io/public/img/2021-12-19-CLIP/01a.png)
+  - sources: `LLM_031_Multimodal_RAG_Part1[Answer].ipynb`
+  - agent: `A08`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [Alibaba 임베딩 인코더 구현 저장소로 장문 검색용 임베딩 모델 실험과 가속 설정에 도움](https://huggingface.co/Alibaba-NLP/new-impl)
+  - sources: `LLM_004_LangChain_PDF_RAG.ipynb`
+  - agent: `A01`
+  - pseudocode_3lines:
+    - 1) 문서를 청킹하고 메타데이터 m과 함께 임베딩해 벡터 인덱스 I에 저장한다.
+    - 2) 질의 q와 필터 f를 받아 I.search(q,f,k)로 후보 문서를 검색한다.
+    - 3) 후보를 재정렬/압축해 생성 단계 컨텍스트로 전달한다.
+- [Jupyter 환경에서 ipywidgets 설치 방법과 호환성 이슈를 정리한 공식 사용자 설치 문서](https://ipywidgets.readthedocs.io/en/stable/user_install.html)
+  - sources: `LLM_011_Query_Expansion.ipynb`, `LLM_013_Generation_Metrics_Me.ipynb`, `LLM_014_LLM-as-Judge-LangChain.ipynb`, `LLM_021_LangGraph_MessageGraph.ipynb`
+  - agent: `A02`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [LangGraph 단기·장기 메모리 차이를 설명해 RAG 메모리 설계 평가에 유용한 이미지](https://langchain-ai.github.io/langgraph/concepts/img/memory/short-vs-long.png)
+  - sources: `LLM_022_LangGraph_Memory.ipynb`
+  - agent: `A03`
+  - pseudocode_3lines:
+    - 1) 상태 S와 메시지 히스토리 H를 로드하고 실행 노드 n을 결정한다.
+    - 2) 각 노드 실행 후 S,H를 체크포인트에 저장해 중단/복구 가능성을 보장한다.
+    - 3) 종료 조건 충족 시 최종 응답과 실행 트레이스를 반환한다.
+- [IT 서비스디자인 관련 외부 자료 링크를 모아둔 허브 페이지](https://linktr.ee/itservicedesign)
+  - sources: `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A04`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [itsideproject의 외부 채널 모음 페이지로 링크 추적형 수집 시나리오 점검용](https://linktr.ee/itsideproject)
+  - sources: `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A05`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [RAG 개선 실험 공유와 질의응답에 활용 가능한 카카오 오픈채팅 커뮤니티 링크](https://open.kakao.com/o/gwNTWF7)
+  - sources: `LLM_013_Generation_Metrics_Me.ipynb`
+  - agent: `A06`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [langgraph-checkpoint-sqlite 패키지 배포 페이지로, 버전·설치 방법·의존성 확인에 유용한 공식 메타정보 제공](https://pypi.org/project/langgraph-checkpoint-sqlite/)
+  - sources: `LLM_022_LangGraph_Memory.ipynb`
+  - agent: `A07`
+  - pseudocode_3lines:
+    - 1) 상태 S와 메시지 히스토리 H를 로드하고 실행 노드 n을 결정한다.
+    - 2) 각 노드 실행 후 S,H를 체크포인트에 저장해 중단/복구 가능성을 보장한다.
+    - 3) 종료 조건 충족 시 최종 응답과 실행 트레이스를 반환한다.
+- [질의 다양화로 검색 재현율을 높이는 MultiQueryRetriever 실습 가이드](https://python.langchain.com/docs/how_to/MultiQueryRetriever/)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A08`
+  - pseudocode_3lines:
+    - 1) 샘플 입력 집합 X를 준비하고 trace/eval 실행 설정 cfg를 로드한다.
+    - 2) 각 x∈X에 대해 run(x) 결과를 수집하고 evaluator로 점수 M(x)를 계산한다.
+    - 3) 임계치 미달 케이스를 실패 큐에 적재하고 리포트/대시보드로 회귀를 추적한다.
+- [멀티쿼리 검색 흐름을 시각화한 이미지로 RAG 검색 확장 전략 설명 자료에 적합](https://raw.githubusercontent.com/tsdata/image_files/main/202505/multi-query.png)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A01`
+  - pseudocode_3lines:
+    - 1) 원질의 q를 입력받아 rewrite/decompose 함수로 확장 질의 집합 Q를 생성한다.
+    - 2) 각 q_i∈Q로 병렬 검색해 후보 문서 D를 합치고 중복 제거 후 재순위화한다.
+    - 3) 상위 문맥 D_top으로 최종 답변을 생성하고 품질/지연 지표를 로그한다.
+- [HyDE 쿼리 확장 개념을 시각화해 RAG 검색 개선 아이디어 검토에 도움 되는 이미지](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_HyDE.png)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A03`
+  - pseudocode_3lines:
+    - 1) 원질의 q를 입력받아 rewrite/decompose 함수로 확장 질의 집합 Q를 생성한다.
+    - 2) 각 q_i∈Q로 병렬 검색해 후보 문서 D를 합치고 중복 제거 후 재순위화한다.
+    - 3) 상위 문맥 D_top으로 최종 답변을 생성하고 품질/지연 지표를 로그한다.
+- [질의 분해 과정을 시각화한 이미지로 RAG 쿼리 리라이팅·분해 전략 설명 자료에 적합한 리소스](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_decomposition.png)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A02`
+  - pseudocode_3lines:
+    - 1) 원질의 q를 입력받아 rewrite/decompose 함수로 확장 질의 집합 Q를 생성한다.
+    - 2) 각 q_i∈Q로 병렬 검색해 후보 문서 D를 합치고 중복 제거 후 재순위화한다.
+    - 3) 상위 문맥 D_top으로 최종 답변을 생성하고 품질/지연 지표를 로그한다.
+- [질의 재작성 흐름을 시각적으로 검토할 수 있는 참고 이미지](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_rewrite.png)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A04`
+  - pseudocode_3lines:
+    - 1) 원질의 q를 입력받아 rewrite/decompose 함수로 확장 질의 집합 Q를 생성한다.
+    - 2) 각 q_i∈Q로 병렬 검색해 후보 문서 D를 합치고 중복 제거 후 재순위화한다.
+    - 3) 상위 문맥 D_top으로 최종 답변을 생성하고 품질/지연 지표를 로그한다.
+- [Step-back 쿼리 예시 이미지로 질의 재작성 프롬프트 설명 자료](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_stepback.png)
+  - sources: `LLM_011_Query_Expansion.ipynb`
+  - agent: `A05`
+  - pseudocode_3lines:
+    - 1) 원질의 q를 입력받아 rewrite/decompose 함수로 확장 질의 집합 Q를 생성한다.
+    - 2) 각 q_i∈Q로 병렬 검색해 후보 문서 D를 합치고 중복 제거 후 재순위화한다.
+    - 3) 상위 문맥 D_top으로 최종 답변을 생성하고 품질/지연 지표를 로그한다.
+- [RAG 평가 프레임워크나 지표 흐름을 시각적으로 요약한 참고 이미지 자료](https://raw.githubusercontent.com/tsdata/image_files/main/202505/rag_evaluation.png)
+  - sources: `LLM_008_RAG_Evalution.ipynb`
+  - agent: `A06`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+- [LangSmith 서비스로, LLM 체인 추적·평가·실험 비교를 통해 RAG 품질 개선과 회귀 점검에 활용](https://smith.langchain.com)
+  - sources: `LLM_019_LangGraph_StateGraph.ipynb`
+  - agent: `A07`
+  - pseudocode_3lines:
+    - 1) 샘플 입력 집합 X를 준비하고 trace/eval 실행 설정 cfg를 로드한다.
+    - 2) 각 x∈X에 대해 run(x) 결과를 수집하고 evaluator로 점수 M(x)를 계산한다.
+    - 3) 임계치 미달 케이스를 실패 큐에 적재하고 리포트/대시보드로 회귀를 추적한다.
+- [LangSmith 데이터셋 실행 세션을 비교해 평가 결과를 분석하는 페이지](https://smith.langchain.com/o/763d64ba-4fe5-4f9e-8ad9-dda697eda390/datasets/507864f4-df98-496b-9806-ee21d534558e/compare?selectedSessions=012c9bb8-4df4-455e-b34a-8a6505f25ef9)
+  - sources: `LLM_013_Generation_Metrics.ipynb`
+  - agent: `A08`
+  - pseudocode_3lines:
+    - 1) 샘플 입력 집합 X를 준비하고 trace/eval 실행 설정 cfg를 로드한다.
+    - 2) 각 x∈X에 대해 run(x) 결과를 수집하고 evaluator로 점수 M(x)를 계산한다.
+    - 3) 임계치 미달 케이스를 실패 큐에 적재하고 리포트/대시보드로 회귀를 추적한다.
+- [Sentence-Transformers 크로스인코더 예제로 재랭킹 단계 도입과 검색 품질 평가 기준 수립에 유용](https://www.sbert.net/examples/applications/cross-encoder/README.html)
+  - sources: `LLM_012_Rerank_Compression.ipynb`
+  - agent: `A01`
+  - pseudocode_3lines:
+    - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
+    - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
+    - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.

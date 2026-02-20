@@ -1,0 +1,5 @@
+https://arxiv.org/pdf/2310.06117
+https://cafe.naver.com/itsideproject
+https://github.com/langchain-ai/langgraph/tree/main/libs/checkpoint-sqlite
+https://pypi.org/project/langgraph-checkpoint-sqlite/
+https://smith.langchain.com

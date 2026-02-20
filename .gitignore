@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+datasets/
+plans/agents/*.log
+plans/agents/*.pid
+plans/agents/pseudocode/*.log
+plans/agents/pseudocode/*.pid

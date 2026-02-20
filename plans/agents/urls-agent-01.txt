@@ -1,0 +1,6 @@
+https://arxiv.org/abs/2212.10496
+http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020103010901
+https://docs.trychroma.com/docs/querying-collections/metadata-filtering
+https://huggingface.co/Alibaba-NLP/new-impl
+https://raw.githubusercontent.com/tsdata/image_files/main/202505/multi-query.png
+https://www.sbert.net/examples/applications/cross-encoder/README.html

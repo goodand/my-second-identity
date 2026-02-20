@@ -1,0 +1,5 @@
+- [다중 질의 재작성으로 검색·응답 성능을 높이는 DMQR-RAG 논문](https://arxiv.org/abs/2411.13154)
+- [LangSmith API 엔드포인트 문서로 RAG 실행 추적·평가 자동화에 활용](https://api.smith.langchain.com)
+- [경업·겸업금지 설명 블로그로 비정형 한국어 웹문서 검색 성능 점검용](https://fetp.tistory.com/42)
+- [itsideproject의 외부 채널 모음 페이지로 링크 추적형 수집 시나리오 점검용](https://linktr.ee/itsideproject)
+- [Step-back 쿼리 예시 이미지로 질의 재작성 프롬프트 설명 자료](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_stepback.png)

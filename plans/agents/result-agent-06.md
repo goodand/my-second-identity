@@ -1,0 +1,5 @@
+- [RAG 성능 향상을 위한 검색-생성 결합 방법과 평가 관점을 정리한 참고 논문](https://arxiv.org/pdf/2205.10625)
+- [LangSmith 데이터셋 API로 RAG 평가용 테스트셋 생성·관리 자동화 방법을 확인하는 문서](https://api.smith.langchain.com/datasets)
+- [반정형·멀티모달 문서를 활용한 RAG 파이프라인 구현 예제를 제공하는 LangChain 노트북](https://github.com/langchain-ai/langchain/blob/5dbe456aae755e3190c46316102e772dfcb6e148/cookbook/Semi_structured_and_multi_modal_RAG.ipynb)
+- [RAG 개선 실험 공유와 질의응답에 활용 가능한 카카오 오픈채팅 커뮤니티 링크](https://open.kakao.com/o/gwNTWF7)
+- [RAG 평가 프레임워크나 지표 흐름을 시각적으로 요약한 참고 이미지 자료](https://raw.githubusercontent.com/tsdata/image_files/main/202505/rag_evaluation.png)

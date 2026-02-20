@@ -1,0 +1,5 @@
+- [RAG 개선 아이디어 탐색에 유용한 최신 연구 논문 초록 페이지](https://arxiv.org/abs/2405.07437)
+- [도메인 분류·노이즈 판별 실험에 활용 가능한 금융 ETF 공식 사이트](http://www.kindexetf.com/)
+- [RAG 파이프라인 예시 문서용으로 쓰기 좋은 표준 더미 웹페이지](https://example.org)
+- [IT 서비스디자인 관련 외부 자료 링크를 모아둔 허브 페이지](https://linktr.ee/itservicedesign)
+- [질의 재작성 흐름을 시각적으로 검토할 수 있는 참고 이미지](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_rewrite.png)

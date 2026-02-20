@@ -1,0 +1,5 @@
+https://arxiv.org/pdf/2205.10625
+https://api.smith.langchain.com/datasets
+https://github.com/langchain-ai/langchain/blob/5dbe456aae755e3190c46316102e772dfcb6e148/cookbook/Semi_structured_and_multi_modal_RAG.ipynb
+https://open.kakao.com/o/gwNTWF7
+https://raw.githubusercontent.com/tsdata/image_files/main/202505/rag_evaluation.png

@@ -1,0 +1,10 @@
+You are Agent 02.
+Task: For each URL in the provided file, write one concise Korean description line in Markdown link format.
+Strict output format for each item:
+- [한 줄 설명](URL)
+Rules:
+- One line description only, <= 20 words.
+- No numbering, no extra sections.
+- Keep descriptions practical for RAG improvement/evaluation study context.
+Input file: plans/rag-upgrade/agents/urls-agent-02.txt
+Only output the bullet list.

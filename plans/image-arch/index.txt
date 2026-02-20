@@ -1,0 +1,8 @@
+1|https://greeksharifa.github.io/public/img/2021-12-19-CLIP/01a.png|plans/rag-upgrade/image-arch/01.png
+2|https://langchain-ai.github.io/langgraph/concepts/img/memory/short-vs-long.png|plans/rag-upgrade/image-arch/02.png
+3|https://raw.githubusercontent.com/tsdata/image_files/main/202505/multi-query.png|plans/rag-upgrade/image-arch/03.png
+4|https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_HyDE.png|plans/rag-upgrade/image-arch/04.png
+5|https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_decomposition.png|plans/rag-upgrade/image-arch/05.png
+6|https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_rewrite.png|plans/rag-upgrade/image-arch/06.png
+7|https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_stepback.png|plans/rag-upgrade/image-arch/07.png
+8|https://raw.githubusercontent.com/tsdata/image_files/main/202505/rag_evaluation.png|plans/rag-upgrade/image-arch/08.png

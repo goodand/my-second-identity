@@ -1,0 +1,5 @@
+- [장문 맥락에서 LLM이 중요한 정보를 놓치는 현상을 분석한 RAG 성능 개선 참고 논문](https://arxiv.org/abs/2305.14283)
+- [ARIRANG ETF 상품 정보와 운용사 공시를 확인해 금융 도메인 RAG 데이터 소스로 활용 가능한 사이트](http://www.arirangetf.com/)
+- [예시용 도메인으로 링크 처리, 크롤링, 예외 케이스 점검에 쓰기 좋은 기준 페이지](https://example.com)
+- [Jupyter 환경에서 ipywidgets 설치 방법과 호환성 이슈를 정리한 공식 사용자 설치 문서](https://ipywidgets.readthedocs.io/en/stable/user_install.html)
+- [질의 분해 과정을 시각화한 이미지로 RAG 쿼리 리라이팅·분해 전략 설명 자료에 적합한 리소스](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_decomposition.png)

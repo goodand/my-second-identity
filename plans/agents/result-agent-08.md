@@ -1,0 +1,5 @@
+- [RAG 성능 개선과 평가 방법을 다루는 최신 연구 논문 PDF 자료](https://arxiv.org/pdf/2401.15884)
+- [LangChain 평가기 SDK API와 사용 방식을 정리한 공식 레퍼런스 문서](https://docs.smith.langchain.com/reference/sdk_reference/langchain_evaluators)
+- [CLIP 임베딩 유사도 개념을 시각적으로 설명하는 참고 이미지](https://greeksharifa.github.io/public/img/2021-12-19-CLIP/01a.png)
+- [질의 다양화로 검색 재현율을 높이는 MultiQueryRetriever 실습 가이드](https://python.langchain.com/docs/how_to/MultiQueryRetriever/)
+- [LangSmith 데이터셋 실행 세션을 비교해 평가 결과를 분석하는 페이지](https://smith.langchain.com/o/763d64ba-4fe5-4f9e-8ad9-dda697eda390/datasets/507864f4-df98-496b-9806-ee21d534558e/compare?selectedSessions=012c9bb8-4df4-455e-b34a-8a6505f25ef9)

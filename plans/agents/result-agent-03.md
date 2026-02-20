@@ -1,0 +1,5 @@
+- [RAG 성능 향상 전략을 벤치마킹할 수 있는 arXiv 연구 논문 초록 페이지](https://arxiv.org/abs/2310.11511)
+- [금융 도메인 RAG 크롤링·정규화 품질을 점검하기 좋은 한국 ETF 공식 사이트](http://www.kindexetf.com)
+- [링크 수집 파이프라인의 예외 처리와 더미 문서 대응을 검증하는 테스트용 도메인](https://example.net)
+- [LangGraph 단기·장기 메모리 차이를 설명해 RAG 메모리 설계 평가에 유용한 이미지](https://langchain-ai.github.io/langgraph/concepts/img/memory/short-vs-long.png)
+- [HyDE 쿼리 확장 개념을 시각화해 RAG 검색 개선 아이디어 검토에 도움 되는 이미지](https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_HyDE.png)

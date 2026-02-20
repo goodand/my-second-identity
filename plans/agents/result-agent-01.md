@@ -1,0 +1,6 @@
+- [HyDE 기반 제로샷 밀집검색 기법을 설명해 RAG 초기 검색 성능 개선에 참고할 논문](https://arxiv.org/abs/2212.10496)
+- [KRX ETF 상세검색 통계 화면으로 금융 도메인 RAG용 기준 데이터 수집에 활용 가능](http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020103010901)
+- [Chroma 메타데이터 필터링 사용법으로 조건 기반 검색 정밀도 향상과 평가 실험 설계에 유용](https://docs.trychroma.com/docs/querying-collections/metadata-filtering)
+- [Alibaba 임베딩 인코더 구현 저장소로 장문 검색용 임베딩 모델 실험과 가속 설정에 도움](https://huggingface.co/Alibaba-NLP/new-impl)
+- [멀티쿼리 검색 흐름을 시각화한 이미지로 RAG 검색 확장 전략 설명 자료에 적합](https://raw.githubusercontent.com/tsdata/image_files/main/202505/multi-query.png)
+- [Sentence-Transformers 크로스인코더 예제로 재랭킹 단계 도입과 검색 품질 평가 기준 수립에 유용](https://www.sbert.net/examples/applications/cross-encoder/README.html)
