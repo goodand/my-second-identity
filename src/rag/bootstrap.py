@@ -1,11 +1,5 @@
-"""
-bootstrap.py — Chroma 벡터스토어를 graph.py에 주입하는 진입점
-
-gangnam-1st에서 식별된 gap:
-  - local_chroma_db 아티팩트 ✓
-  - graph.py configure_vectorstore() 인터페이스 ✓
-  - 둘을 연결하는 코드 ✗  ← 이 파일이 해결
-"""
+"""bootstrap.py — Chroma 벡터스토어를 graph.py에 주입하는 진입점."""
+import os
 import yaml
 from pathlib import Path
 from langchain_chroma import Chroma
@@ -24,9 +18,13 @@ def load_config() -> dict:
 def init_vectorstore() -> Chroma:
     cfg = load_config()
     vs_cfg = cfg["vector_store"]
+    persist_directory = os.environ.get(
+        vs_cfg.get("persist_directory_env", "MSI_CHROMA_PERSIST_DIRECTORY"),
+        vs_cfg["persist_directory"],
+    )
     embedding = OpenAIEmbeddings(model=vs_cfg["embedding_model"])
     store = Chroma(
-        persist_directory=vs_cfg["persist_directory"],
+        persist_directory=persist_directory,
         embedding_function=embedding,
     )
     return store
