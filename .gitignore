@@ -1,12 +1,31 @@
 .env
+.mcp.json
+.DS_Store
 __pycache__/
 *.pyc
+*.log
+*.pid
 .venv/
 venv/
 *.egg-info/
 .pytest_cache/
 datasets/
-plans/agents/*.log
-plans/agents/*.pid
-plans/agents/pseudocode/*.log
-plans/agents/pseudocode/*.pid
+
+# Local runtime/control artifacts
+.codex/
+logs/
+tmp/
+
+# Experiment-generated outputs and caches
+plans/codex/test_result/
+plans/codex/models/
+plans/codex/**/.cache/
+plans/codex/**/cache/
+plans/codex/**/checkpoints/
+
+# Local vector/model stores
+local_chroma_db*/
+chroma_db*/
+*.sqlite
+*.sqlite3
+*.db
