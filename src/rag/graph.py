@@ -1,3 +1,4 @@
+import hashlib
 import logging
 from typing import Any, List, TypedDict, Optional
 from langgraph.graph import StateGraph, START, END
@@ -38,6 +39,10 @@ class RAGState(TypedDict):
     user_query: str
     search_results: List[str]
     final_answer: str
+    # P0: HyDE variant 정합 필드 (KB #01, REV_DECISION_STEP1)
+    hyde_variant: Optional[str]      # "paper" | "subquery" (default: "paper")
+    hypo_used: bool                  # paper variant 실행 시 True
+    hypo_text_hash: Optional[str]    # hypo_doc MD5[:8], provenance 추적용
 
 
 def _search_or_empty(store: Any, query: str, k: int = 3) -> List[str]:
@@ -61,22 +66,43 @@ _HYDE_PROMPT = ChatPromptTemplate.from_template(
 )
 
 
+def _generate_hypo_doc(query: str) -> str:
+    """HyDE paper variant — 가상 문서 생성 (테스트 모킹 진입점)"""
+    return (_HYDE_PROMPT | get_llm() | StrOutputParser()).invoke({"query": query})
+
+
 def hyde_search(state: RAGState) -> RAGState:
     """KB #01 HyDE — 가상 문서 임베딩으로 벡터 검색 (Phase 3 진입점)
 
-    Before (단일 벡터 검색): q → embedding → top-k
-    After  (쿼리 확장 검색): q → LLM(가상문서) → embedding(가상문서) → top-k
+    variant=paper  (default): q → LLM(hypo_doc) → embed(hypo_doc) → top-k
+    variant=subquery         : q → embed(q) → top-k  (hypo_doc 생성 없음)
+
+    provenance 필드: hypo_used, hypo_text_hash (REV_DECISION_STEP1 KPI)
     """
-    # 1) 가상 문서 생성
-    hypo_doc = (_HYDE_PROMPT | get_llm() | StrOutputParser()).invoke(
-        {"query": state["user_query"]}
-    )
-    logger.debug("HyDE hypo_doc generated. length=%d", len(hypo_doc))
+    variant = state.get("hyde_variant") or "paper"
 
-    # 2) 가상 문서 임베딩으로 코퍼스 검색
-    search_results = _search_or_empty(db_korean, hypo_doc, k=3)
+    if variant == "paper":
+        # 1) 가상 문서 생성
+        hypo_doc = _generate_hypo_doc(state["user_query"])
+        logger.debug("HyDE hypo_doc generated. length=%d", len(hypo_doc))
 
-    return {"search_results": search_results}
+        hypo_text_hash = hashlib.md5(hypo_doc.encode()).hexdigest()[:8]
+        search_query = hypo_doc
+        hypo_used = True
+    else:
+        # subquery: 원본 질문으로 직접 검색
+        search_query = state["user_query"]
+        hypo_used = False
+        hypo_text_hash = None
+
+    # 2) 벡터 검색
+    search_results = _search_or_empty(db_korean, search_query, k=3)
+
+    return {
+        "search_results": search_results,
+        "hypo_used": hypo_used,
+        "hypo_text_hash": hypo_text_hash,
+    }
 
 
 def generate_response(state: RAGState) -> RAGState:
