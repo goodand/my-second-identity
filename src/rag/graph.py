@@ -35,7 +35,7 @@ def get_llm() -> ChatOpenAI:
     return llm
 
 
-class RAGState(TypedDict):
+class RAGState(TypedDict, total=False):
     user_query: str
     search_results: List[str]
     final_answer: str

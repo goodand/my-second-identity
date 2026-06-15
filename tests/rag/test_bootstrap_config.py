@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from src.rag import bootstrap as bootstrap_module
 
 
@@ -43,3 +45,12 @@ def test_relative_persist_directory_helper_is_repo_root_relative(monkeypatch):
     )
 
     assert Path(resolved) == (bootstrap_module._PROJECT_ROOT / "nested/chroma").resolve()
+
+
+def test_missing_persist_directory_raises_clear_error(monkeypatch):
+    monkeypatch.delenv("MSI_CHROMA_PERSIST_DIRECTORY", raising=False)
+
+    with pytest.raises(ValueError, match="Chroma persist directory is not configured"):
+        bootstrap_module._resolve_persist_directory(
+            {"persist_directory_env": "MSI_CHROMA_PERSIST_DIRECTORY"}
+        )

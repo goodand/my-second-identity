@@ -3,7 +3,7 @@
 - ver: `v2.6.4`
 - generated_at: `2026-02-19`
 - updated_at: `2026-02-26` (v2.6.4: #12~#19 최신 RAG 기법 PDF 요약 추가)
-- format: `- [한 줄 설명](URL)`
+- format: `- [한 줄 설명]({URL})`
 - generation_method: `8 codex agents parallel`
 - total_urls: `52`
 - paper_like_urls: `19`
@@ -15,8 +15,8 @@
 |------|------|
 | [PLAN.md](../../../gemini/PLAN.md) | 실행 계획 · 단계 · 에이전트 운영 규칙 |
 | `RAG_URL_KNOWLEDGE_BASE.md` (이 파일) | 논문 19편 + 참고 URL 33개 인덱스 |
-| [OWL_URL_KNOWLEDGE_BASE.md](./OWL_URL_KNOWLEDGE_BASE.md) | OWL reasoner 논문/구현/벤치마크 URL 인덱스 |
-| [MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md](./MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md) | Multi-hop/Answerable/Abstention 평가 URL 인덱스 |
+| `OWL_URL_KNOWLEDGE_BASE.md` | OWL reasoner 논문/구현/벤치마크 URL 인덱스. Current remote release does not track this companion file. |
+| `MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md` | Multi-hop/Answerable/Abstention 평가 URL 인덱스. Current remote release does not track this companion file. |
 | [IMAGE_STRUCTURE_GRAPHS.md](../../../gemini/IMAGE_STRUCTURE_GRAPHS.md) | 논문/이미지 기반 다이어그램 8개 |
 | [IMAGE_URL_MATCHES.md](../../../gemini/IMAGE_URL_MATCHES.md) | 이미지 URL ↔ 노트북 소스 매핑 |
 
@@ -239,7 +239,7 @@
     - 3) 인과 경로와의 일치 여부로 답변을 검증한다.
 
 ## Other RAG References URLs
-- [Multi-hop/Answerable/Abstention 평가 전용 URL 인덱스](./MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md)
+- Multi-hop/Answerable/Abstention 평가 전용 URL 인덱스: `MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md` is not tracked in the current remote release baseline.
   - sources: `docs/knowledge/MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md`
   - agent: `codex`
   - pseudocode_3lines:

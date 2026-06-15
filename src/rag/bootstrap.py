@@ -7,8 +7,8 @@ from langchain_openai import OpenAIEmbeddings
 
 from src.rag.graph import configure_vectorstore
 
-_CONFIG_PATH = Path(__file__).parent.parent.parent / "configs" / "rag.yaml"
-_PROJECT_ROOT = _CONFIG_PATH.parent.parent
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+_CONFIG_PATH = _PROJECT_ROOT / "configs" / "rag.yaml"
 
 
 def load_config() -> dict:
@@ -18,7 +18,12 @@ def load_config() -> dict:
 
 def _resolve_persist_directory(vs_cfg: dict) -> str:
     env_name = vs_cfg.get("persist_directory_env", "MSI_CHROMA_PERSIST_DIRECTORY")
-    configured_path = os.environ.get(env_name, vs_cfg["persist_directory"])
+    configured_path = os.environ.get(env_name, vs_cfg.get("persist_directory"))
+    if not configured_path:
+        raise ValueError(
+            f"Chroma persist directory is not configured. Set {env_name!r} "
+            "or configure vector_store.persist_directory."
+        )
     persist_path = Path(configured_path).expanduser()
     if persist_path.is_absolute():
         return str(persist_path)

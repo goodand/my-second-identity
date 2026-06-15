@@ -113,6 +113,16 @@ class TestRetrieveCandidatesHydePaper:
         call_args = graph_module.db_korean.similarity_search.call_args
         assert call_args.kwargs["k"] == 7
 
+    def test_partial_hyde_result_does_not_raise_key_error(self):
+        """mock/refactor가 partial result를 반환해도 bundle 생성은 방어적으로 동작한다."""
+        with patch("src.rag.graph.hyde_search", return_value={"search_results": ["doc"]}):
+            result = retrieve_candidates("hyde", "질문")
+
+        assert result.candidates == ["doc"]
+        assert result.hyde_variant is None
+        assert result.hypo_used is False
+        assert result.hypo_text_hash is None
+
 
 # ── Red 3: retrieve_candidates — hyde subquery variant ───────────────────────
 class TestRetrieveCandidatesHydeSubquery:
