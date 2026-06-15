@@ -104,6 +104,7 @@ class TestRetrieveCandidatesHydePaper:
         with patch(_PATCH_HYPO, return_value=FAKE_HYPO):
             result = retrieve_candidates("hyde", "질문")
         assert result.hypo_used is True
+        assert result.hyde_variant == "paper"
 
     def test_k_is_forwarded_to_vector_search(self):
         """retrieve_candidates(k=...)는 metadata뿐 아니라 실제 검색 k도 바꿔야 한다."""
@@ -130,6 +131,12 @@ class TestRetrieveCandidatesHydeSubquery:
     def test_subquery_candidates_is_list(self):
         result = retrieve_candidates("hyde", "질문", options={"hyde_variant": "subquery"})
         assert isinstance(result.candidates, list)
+
+
+class TestRetrieveCandidatesInvalidHydeVariant:
+    def test_invalid_hyde_variant_raises(self):
+        with pytest.raises(ValueError, match="Unsupported hyde_variant"):
+            retrieve_candidates("hyde", "질문", options={"hyde_variant": "papre"})
 
 
 # ── Red 4: jaccard() 계산 검증 ───────────────────────────────────────────────

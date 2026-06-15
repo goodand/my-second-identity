@@ -65,6 +65,7 @@ def _search_or_empty(store: Any, query: str, k: int = 3) -> List[str]:
 _HYDE_PROMPT = ChatPromptTemplate.from_template(
     "다음 질문에 대한 답변을 포함할 것 같은 짧은 문단을 한국어로 작성하세요.\n질문: {query}"
 )
+_HYDE_VARIANTS = {"paper", "subquery"}
 
 
 def _generate_hypo_doc(query: str) -> str:
@@ -81,6 +82,10 @@ def hyde_search(state: RAGState) -> RAGState:
     provenance 필드: hypo_used, hypo_text_hash (REV_DECISION_STEP1 KPI)
     """
     variant = state.get("hyde_variant") or "paper"
+    if variant not in _HYDE_VARIANTS:
+        raise ValueError(
+            f"Unsupported hyde_variant: {variant!r}. Supported: {sorted(_HYDE_VARIANTS)}"
+        )
 
     if variant == "paper":
         # 1) 가상 문서 생성
@@ -102,6 +107,7 @@ def hyde_search(state: RAGState) -> RAGState:
 
     return {
         "search_results": search_results,
+        "hyde_variant": variant,
         "hypo_used": hypo_used,
         "hypo_text_hash": hypo_text_hash,
     }
