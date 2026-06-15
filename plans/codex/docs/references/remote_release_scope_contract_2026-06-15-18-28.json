@@ -272,7 +272,7 @@
         "src/rag/candidates.py": [
           "class CandidateBundle",
           "\"retrieval_k\": k",
-          "hyde_variant=result[\"hyde_variant\"]"
+          "hyde_variant=result.get(\"hyde_variant\")"
         ],
         "tests/rag/test_bootstrap_config.py": [
           "test_init_vectorstore_resolves_config_default_path_from_repo_root",

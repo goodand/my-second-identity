@@ -160,6 +160,46 @@ def test_required_history_subject_fails_when_missing(tmp_path: Path) -> None:
     assert result.details == ["missing subject"]
 
 
+def test_git_log_subjects_does_not_truncate_history(monkeypatch, tmp_path: Path) -> None:
+    captured: list[str] = []
+
+    def fake_run_git(repo: Path, args: list[str]):
+        del repo
+        captured.extend(args)
+
+        class Proc:
+            returncode = 0
+            stdout = "subject\n"
+            stderr = ""
+
+        return Proc()
+
+    monkeypatch.setattr(validator, "run_git", fake_run_git)
+
+    assert validator.git_log_subjects(tmp_path) == ["subject"]
+    assert captured == ["log", "--format=%s"]
+
+
+def test_empty_gates_contract_fails_shape(tmp_path: Path) -> None:
+    init_repo(
+        tmp_path,
+        {
+            "src/rag/bootstrap.py": "def _resolve_persist_directory(): pass\n",
+            "plans/doc.md": "new/path.md\n",
+        },
+    )
+    contract = base_contract()
+    contract["gates"] = []
+
+    results = validator.validate(contract, tmp_path)
+
+    assert len(results) == 1
+    result = results[0]
+    assert result.gate_id == "GATE-CONTRACT-SHAPE"
+    assert not result.passed
+    assert "empty_or_invalid:gates" in result.details
+
+
 def test_file_marker_missing_fails(tmp_path: Path) -> None:
     init_repo(
         tmp_path,

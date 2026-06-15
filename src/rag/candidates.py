@@ -93,10 +93,10 @@ def retrieve_candidates(
         return CandidateBundle(
             mode=mode,
             query=query,
-            candidates=result["search_results"],
-            hyde_variant=result["hyde_variant"],
-            hypo_used=result["hypo_used"],
-            hypo_text_hash=result["hypo_text_hash"],
+            candidates=result.get("search_results", []),
+            hyde_variant=result.get("hyde_variant"),
+            hypo_used=result.get("hypo_used", False),
+            hypo_text_hash=result.get("hypo_text_hash"),
             metadata={"k": k},
         )
 

@@ -71,7 +71,7 @@ def git_ls_files(repo: Path) -> list[str]:
 
 
 def git_log_subjects(repo: Path) -> list[str]:
-    proc = run_git(repo, ["log", "--format=%s", "--max-count=300"])
+    proc = run_git(repo, ["log", "--format=%s"])
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "git log failed")
     return [line.strip() for line in proc.stdout.splitlines() if line.strip()]
@@ -239,6 +239,15 @@ CHECKS = {
 
 
 def validate(contract: dict[str, Any], repo: Path) -> list[CheckResult]:
+    if not isinstance(contract.get("gates"), list) or not contract.get("gates"):
+        return [
+            check_contract_shape(
+                {"id": "GATE-CONTRACT-SHAPE"},
+                contract,
+                repo,
+            )
+        ]
+
     results: list[CheckResult] = []
     for gate in contract.get("gates", []):
         gate_type = gate.get("type")
