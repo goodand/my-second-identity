@@ -1,0 +1,262 @@
+{
+  "contract_version": "0.1",
+  "contract_id": "REMOTE-RELEASE-GATE-2026-06-15-18-28",
+  "created_at": "2026-06-15-18-28",
+  "ultra_goal": "GitHub 원격 저장소의 main 브랜치를 재현 가능한 RAG 실험/개발 기준점으로 만든다.",
+  "goals": [
+    {
+      "id": "G-RAG-CODE",
+      "statement": "RAG code changes are present in the remote-release baseline.",
+      "verification": "Required paths and commit subjects are checked."
+    },
+    {
+      "id": "G-CHROMA-CONFIG",
+      "statement": "Chroma persistence is controlled by config defaults plus an environment override.",
+      "verification": "configs/rag.yaml and src/rag/bootstrap.py contain the expected markers."
+    },
+    {
+      "id": "G-HYDE-PROVENANCE",
+      "statement": "HyDE/CandidateBundle provenance behavior is explicit and tested.",
+      "verification": "src/rag/graph.py, src/rag/candidates.py, and RAG tests are checked."
+    },
+    {
+      "id": "G-PLANS-REORG",
+      "statement": "planning artifacts are organized into owner directories with stale links removed.",
+      "verification": "plans/claude, plans/gemini, plans/codex/docs, plans/codex/research, and plans/codex/image-arch are checked."
+    },
+    {
+      "id": "G-RELEASE-GATE",
+      "statement": "scope can be validated by code with a deterministic pass/fail result.",
+      "verification": "scripts/release/validate_remote_release_gate.py validates this contract."
+    }
+  ],
+  "non_goals": [
+    {
+      "id": "NG-NEW-EXPERIMENT",
+      "statement": "Do not run or add a new Docling/RAG experiment as part of this release gate."
+    },
+    {
+      "id": "NG-QUESTIONSET-REJUDGE",
+      "statement": "Do not rerun answerable45 or 65Q evaluation as part of this release gate."
+    },
+    {
+      "id": "NG-OBSIDIAN-VAULT",
+      "statement": "Do not include Obsidian vault expansion or facade restructuring."
+    },
+    {
+      "id": "NG-LOCAL-WORKTREE-CLEANUP",
+      "statement": "Do not treat the dirty local main worktree as release scope; validate the branch or origin/main tree instead."
+    },
+    {
+      "id": "NG-GENERATED-UPLOAD",
+      "statement": "Do not upload runtime, cache, log, local database, or secret-like files."
+    },
+    {
+      "id": "NG-METRIC-REDEFINITION",
+      "statement": "Do not change RAG metric definitions in this release gate."
+    }
+  ],
+  "included_scope": [
+    {
+      "id": "INC-RAG-CODE",
+      "paths": [
+        "src/rag/bootstrap.py",
+        "src/rag/graph.py",
+        "src/rag/candidates.py"
+      ],
+      "reason": "runtime code touched by the merged RAG review and Chroma path fixes"
+    },
+    {
+      "id": "INC-CONFIG-LOCK",
+      "paths": [
+        "configs/rag.yaml",
+        "uv.lock",
+        ".gitignore"
+      ],
+      "reason": "reproducible config, dependency lock, and local artifact exclusion rules"
+    },
+    {
+      "id": "INC-RAG-TESTS",
+      "paths": [
+        "tests/rag/test_bootstrap_config.py",
+        "tests/rag/test_candidate_bundle.py",
+        "tests/rag/test_hyde_variant.py"
+      ],
+      "reason": "code-level regression coverage for the included RAG changes"
+    },
+    {
+      "id": "INC-PLANS-DOCS",
+      "paths": [
+        "plans/claude/CLAUDE_REVIEW_REQUEST.md",
+        "plans/gemini/PLAN.md",
+        "plans/gemini/IMAGE_STRUCTURE_GRAPHS.md",
+        "plans/gemini/IMAGE_URL_MATCHES.md",
+        "plans/codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md",
+        "plans/codex/docs/notes/MASTER_SUMMARY.md",
+        "plans/codex/docs/notes/notebooks.md",
+        "plans/codex/docs/reports/plans_diff_classification_2026-06-15-15-51.md"
+      ],
+      "reason": "owner-directory document reorganization and link cleanup"
+    },
+    {
+      "id": "INC-PLANS-RESEARCH",
+      "paths": [
+        "plans/codex/research/agent-01.md",
+        "plans/codex/research/agent-02.md",
+        "plans/codex/research/agent-03.md",
+        "plans/codex/research/agent-04.md",
+        "plans/codex/research/agent-05.md",
+        "plans/codex/research/agent-06.md",
+        "plans/codex/research/agent-07.md",
+        "plans/codex/research/agent-08.md"
+      ],
+      "reason": "preserved research reports that were exact moves from the old codex location"
+    },
+    {
+      "id": "INC-IMAGE-ARCH",
+      "paths": [
+        "plans/codex/image-arch/01.png",
+        "plans/codex/image-arch/02.png",
+        "plans/codex/image-arch/03.png",
+        "plans/codex/image-arch/04.png",
+        "plans/codex/image-arch/05.png",
+        "plans/codex/image-arch/06.png",
+        "plans/codex/image-arch/07.png",
+        "plans/codex/image-arch/08.png",
+        "plans/codex/image-arch/index.txt",
+        "plans/codex/image-arch/targets.txt"
+      ],
+      "reason": "user-approved exact image architecture asset move"
+    },
+    {
+      "id": "INC-RELEASE-GATE",
+      "paths": [
+        "plans/codex/docs/reports/remote_release_ultra_goal_2026-06-15-18-28.md",
+        "plans/codex/docs/references/remote_release_scope_contract_2026-06-15-18-28.json",
+        "scripts/release/validate_remote_release_gate.py",
+        "tests/release/test_validate_remote_release_gate.py"
+      ],
+      "reason": "machine-verifiable scope contract and validation harness"
+    }
+  ],
+  "excluded_scope": [
+    {
+      "id": "EXC-SECRETS-LOCAL",
+      "tracked_forbidden_globs": [
+        ".env",
+        ".mcp.json"
+      ],
+      "reason": "local secrets or machine-local connector state"
+    },
+    {
+      "id": "EXC-RUNTIME-LOGS",
+      "tracked_forbidden_globs": [
+        "logs/**",
+        "tmp/**",
+        "*.log",
+        "*.pid",
+        "plans/claude/*.log",
+        "plans/claude/*.json"
+      ],
+      "reason": "runtime logs and non-promoted measurement outputs"
+    },
+    {
+      "id": "EXC-CACHE",
+      "tracked_forbidden_globs": [
+        ".pytest_cache/**",
+        "**/__pycache__/**",
+        "**/*.pyc"
+      ],
+      "reason": "cache and Python bytecode"
+    },
+    {
+      "id": "EXC-LOCAL-DB",
+      "tracked_forbidden_globs": [
+        "local_chroma_db*/**",
+        "*chroma_db*/**"
+      ],
+      "reason": "local vector database artifacts"
+    },
+    {
+      "id": "EXC-CODEX-GENERATED",
+      "tracked_forbidden_globs": [
+        "plans/codex/.git/**",
+        "plans/codex/.pytest_cache/**",
+        "plans/codex/.tmp/**",
+        "plans/codex/test_result/**"
+      ],
+      "reason": "generated experiment/runtime scope excluded from the remote release baseline"
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-CONTRACT-SHAPE",
+      "type": "contract_shape"
+    },
+    {
+      "id": "GATE-REQUIRED-PATHS",
+      "type": "required_paths_exist"
+    },
+    {
+      "id": "GATE-FORBIDDEN-TRACKED",
+      "type": "forbidden_tracked_absent"
+    },
+    {
+      "id": "GATE-REQUIRED-HISTORY",
+      "type": "required_subjects_in_history",
+      "subjects": [
+        "feat: add HyDE provenance candidate bundle",
+        "chore: make Chroma path configurable",
+        "fix: resolve Chroma path relative to repo root",
+        "fix: address RAG review followups",
+        "docs: reorganize plans artifacts"
+      ]
+    },
+    {
+      "id": "GATE-FILE-CONTAINS",
+      "type": "file_contains",
+      "files": {
+        "configs/rag.yaml": [
+          "persist_directory_env",
+          "MSI_CHROMA_PERSIST_DIRECTORY"
+        ],
+        "src/rag/bootstrap.py": [
+          "_resolve_persist_directory",
+          "MSI_CHROMA_PERSIST_DIRECTORY",
+          "_PROJECT_ROOT"
+        ],
+        "src/rag/graph.py": [
+          "_HYDE_VARIANTS",
+          "Unsupported hyde_variant",
+          "\"hyde_variant\": variant"
+        ],
+        ".gitignore": [
+          ".ipynb_checkpoints/",
+          ".cache/",
+          "*chroma_db*/"
+        ]
+      }
+    },
+    {
+      "id": "GATE-NO-STALE-PLAN-LINKS",
+      "type": "no_stale_text_patterns",
+      "paths": [
+        "plans/claude/CLAUDE_REVIEW_REQUEST.md",
+        "plans/gemini/PLAN.md",
+        "plans/gemini/IMAGE_STRUCTURE_GRAPHS.md",
+        "plans/gemini/IMAGE_URL_MATCHES.md",
+        "plans/codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md",
+        "plans/codex/docs/notes/MASTER_SUMMARY.md"
+      ],
+      "patterns": [
+        "plans/codex/RAG_URL_KNOWLEDGE_BASE.md",
+        "plans/codex/MASTER_SUMMARY.md",
+        "](../codex/RAG_URL_KNOWLEDGE_BASE.md)",
+        "](../codex/MASTER_SUMMARY.md)",
+        "](../gemini/",
+        "](RAG_URL_KNOWLEDGE_BASE.md)",
+        "](research/agent-"
+      ]
+    }
+  ]
+}
