@@ -1,6 +1,6 @@
 # Image Structure Graphs
 
-- source_index: `plans/rag-upgrade/image-arch/index.txt`
+- source_index: `plans/codex/image-arch/index.txt`
 - ver: `v1.3.0`
 - note: `02`는 원본 URL이 리다이렉트되어 이미지가 아닌 HTML이 내려와, 동일 개념(Short vs Long memory)으로 복원함.
 
@@ -9,7 +9,7 @@
 | 문서 | 역할 |
 |------|------|
 | [PLAN.md](PLAN.md) | 실행 계획 · 에이전트 트랙 — 각 다이어그램의 담당 에이전트 확인 |
-| [RAG_URL_KNOWLEDGE_BASE.md](RAG_URL_KNOWLEDGE_BASE.md) | 다이어그램 원본 논문 + 참고 URL |
+| [RAG_URL_KNOWLEDGE_BASE.md](../codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md) | 다이어그램 원본 논문 + 참고 URL |
 | `IMAGE_STRUCTURE_GRAPHS.md` (이 파일) | 8개 다이어그램 Mermaid 코드 + adjacency_list |
 | [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md) | 이미지 URL ↔ 노트북/KB 소스 매핑 |
 
@@ -66,7 +66,7 @@ flowchart LR
 
 ## 03. Multi-Query / RAG-Fusion / DMQR-RAG
 - image_url: `https://raw.githubusercontent.com/tsdata/image_files/main/202505/multi-query.png`
-- cross_ref: 논문 [#05 DMQR-RAG](RAG_URL_KNOWLEDGE_BASE.md#paper-like-urls) · 노트북 `LLM_011_Query_Expansion.ipynb` · 에이전트 [A01 Query expansion 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 3](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
+- cross_ref: 논문 [#05 DMQR-RAG](../codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md#paper-like-urls) · 노트북 `LLM_011_Query_Expansion.ipynb` · 에이전트 [A01 Query expansion 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 3](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
 - taxonomy: [[쿼리 확장 검색]] · Axis A
 
 ```mermaid
@@ -105,7 +105,7 @@ flowchart LR
 
 ## 04. HyDE
 - image_url: `https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_HyDE.png`
-- cross_ref: 논문 [#01 HyDE (2212.10496)](RAG_URL_KNOWLEDGE_BASE.md#paper-like-urls) · 노트북 `LLM_011_Query_Expansion.ipynb` · 에이전트 [A01 Query expansion 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 3](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
+- cross_ref: 논문 [#01 HyDE (2212.10496)](../codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md#paper-like-urls) · 노트북 `LLM_011_Query_Expansion.ipynb` · 에이전트 [A01 Query expansion 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 3](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
 - taxonomy: [[쿼리 확장 검색]] · Axis A
 
 ```mermaid
@@ -130,7 +130,7 @@ flowchart LR
 ## 05. Query Decomposition
 - image_url: `https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_decomposition.png`
 - cross_ref: 노트북 `LLM_011_Query_Expansion.ipynb` · 에이전트 [A01 Query expansion 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 3](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
-- taxonomy: [[쿼리 확장 검색]] · Axis A
+- taxonomy: [[쿼리 분해 프롬프팅]] · Axis A
 
 ```mermaid
 flowchart LR
@@ -157,7 +157,7 @@ flowchart LR
 ## 06. Query Rewrite (Trainable Rewrite-Retrieve-Read)
 - image_url: `https://raw.githubusercontent.com/tsdata/image_files/main/202505/query_rewrite.png`
 - cross_ref: 노트북 `LLM_011_Query_Expansion.ipynb` · 에이전트 [A01 Query expansion 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 3](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
-- taxonomy: [[쿼리 확장 검색]] · Axis A
+- taxonomy: [[쿼리 재작성]] · Axis A
 
 ```mermaid
 flowchart LR
@@ -203,7 +203,7 @@ flowchart LR
 
 ## 08. RAG Evaluation/Benchmark Pipeline
 - image_url: `https://raw.githubusercontent.com/tsdata/image_files/main/202505/rag_evaluation.png`
-- cross_ref: 논문 [#04 RAG Survey (2405.07437)](RAG_URL_KNOWLEDGE_BASE.md#paper-like-urls) · 노트북 `LLM_008_RAG_Evalution.ipynb` · 에이전트 [A02 Evaluation 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 2](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
+- cross_ref: 논문 [#04 RAG Survey (2405.07437)](../codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md#paper-like-urls) · 노트북 `LLM_008_RAG_Evalution.ipynb` · 에이전트 [A02 Evaluation 트랙](PLAN.md#8-agent-operation-plan) · 실행 단계 [Phase 2](PLAN.md#execution-phases) · 이미지 출처 [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md#matched-with-rag_url_knowledge_base)
 - taxonomy: [[RAG 평가 파이프라인]]
 
 ```mermaid

@@ -9,15 +9,15 @@ Context
 
 1) Multi-agent repo analysis (8 agents)
 - Ran 8 Codex agents in parallel and produced reports in:
-  - `plans/codex/agent-01.md` ... `plans/codex/agent-08.md`
+  - `plans/codex/research/agent-01.md` ... `plans/codex/research/agent-08.md`
 - Consolidated summary:
-  - `plans/codex/MASTER_SUMMARY.md`
+  - `plans/codex/docs/notes/MASTER_SUMMARY.md`
 
 2) RAG-upgrade planning docs (consolidated, minimal set)
 - Canonical plan + reading manual + 8-agent operation protocol:
-  - `plans/rag-upgrade/PLAN.md`
+  - `plans/gemini/PLAN.md`
 - Canonical URL knowledge base for RAG references:
-  - `plans/rag-upgrade/RAG_URL_KNOWLEDGE_BASE.md`
+  - `plans/codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md`
 
 3) URL mining and curation
 - Scanned RAG-related notebooks and collected URLs.
@@ -29,11 +29,11 @@ Context
 
 4) Image URL matching and architecture extraction
 - Matched image URLs in workspace against RAG URL KB:
-  - `plans/rag-upgrade/IMAGE_URL_MATCHES.md`
+  - `plans/gemini/IMAGE_URL_MATCHES.md`
 - Downloaded 8 target images and extracted structure representations:
-  - index: `plans/rag-upgrade/image-arch/index.txt`
-  - local files: `plans/rag-upgrade/image-arch/01.png` ... `08.png`
-  - graph output: `plans/rag-upgrade/IMAGE_STRUCTURE_GRAPHS.md`
+  - index: `plans/codex/image-arch/index.txt`
+  - local files: `plans/codex/image-arch/01.png` ... `08.png`
+  - graph output: `plans/gemini/IMAGE_STRUCTURE_GRAPHS.md`
 - For each image, produced:
   - Mermaid flow
   - Adjacency list

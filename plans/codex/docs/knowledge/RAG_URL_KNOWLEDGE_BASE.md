@@ -1,22 +1,24 @@
 # RAG URL Knowledge Base
 
-- ver: `v2.6.0`
+- ver: `v2.6.4`
 - generated_at: `2026-02-19`
-- updated_at: `2026-02-20` (v2.6.0: #07 FiD 교체, #01 HyDE pseudocode 3번 줄 수정)
+- updated_at: `2026-02-26` (v2.6.4: #12~#19 최신 RAG 기법 PDF 요약 추가)
 - format: `- [한 줄 설명](URL)`
 - generation_method: `8 codex agents parallel`
-- total_urls: `41`
-- paper_like_urls: `8`
+- total_urls: `52`
+- paper_like_urls: `19`
 - other_urls: `33`
 
 ## Document Map
 
 | 문서 | 역할 |
 |------|------|
-| [PLAN.md](PLAN.md) | 실행 계획 · 단계 · 에이전트 운영 규칙 |
-| `RAG_URL_KNOWLEDGE_BASE.md` (이 파일) | 논문 8편 + 참고 URL 33개 인덱스 |
-| [IMAGE_STRUCTURE_GRAPHS.md](IMAGE_STRUCTURE_GRAPHS.md) | 논문/이미지 기반 다이어그램 8개 |
-| [IMAGE_URL_MATCHES.md](IMAGE_URL_MATCHES.md) | 이미지 URL ↔ 노트북 소스 매핑 |
+| [PLAN.md](../../../gemini/PLAN.md) | 실행 계획 · 단계 · 에이전트 운영 규칙 |
+| `RAG_URL_KNOWLEDGE_BASE.md` (이 파일) | 논문 19편 + 참고 URL 33개 인덱스 |
+| [OWL_URL_KNOWLEDGE_BASE.md](./OWL_URL_KNOWLEDGE_BASE.md) | OWL reasoner 논문/구현/벤치마크 URL 인덱스 |
+| [MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md](./MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md) | Multi-hop/Answerable/Abstention 평가 URL 인덱스 |
+| [IMAGE_STRUCTURE_GRAPHS.md](../../../gemini/IMAGE_STRUCTURE_GRAPHS.md) | 논문/이미지 기반 다이어그램 8개 |
+| [IMAGE_URL_MATCHES.md](../../../gemini/IMAGE_URL_MATCHES.md) | 이미지 URL ↔ 노트북 소스 매핑 |
 
 ## Table of Contents
 - [Paper-like URLs](#paper-like-urls)
@@ -26,7 +28,7 @@
 - [HyDE 기반 제로샷 밀집검색 기법을 설명해 RAG 초기 검색 성능 개선에 참고할 논문](https://arxiv.org/abs/2212.10496)
   - sources: `LLM_011_Query_Expansion.ipynb`
   - agent: `A01`
-  - cross_ref: 다이어그램 [#04 HyDE](IMAGE_STRUCTURE_GRAPHS.md#04-hyde) · 실행 단계 [Phase 3 검색 개선](PLAN.md#execution-phases) · 관련 논문 [#05 DMQR-RAG](#05-dmqr-rag)
+  - cross_ref: 다이어그램 [#04 HyDE](../../../gemini/IMAGE_STRUCTURE_GRAPHS.md#04-hyde) · 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#05 DMQR-RAG](#05-dmqr-rag)
   - taxonomy: [[쿼리 확장 검색]] · Axis A
   - key_idea: 정답 유사 가상 문서를 LLM으로 먼저 생성해 dense retrieval의 recall을 높인다.
   - execution_conditions: 품질 좋은 생성모델, 임베딩 모델 정합성, 쿼리당 추가 생성 비용 허용.
@@ -34,21 +36,21 @@
     - 1) 질의 q를 입력받아 LLM으로 가상 문서 d_hypo를 생성한다.
     - 2) d_hypo를 임베딩해 벡터 v_hypo를 만들고, 코퍼스 임베딩들과 유사도 검색해 상위 k 문서 D_top을 찾는다.
     - 3) D_top을 컨텍스트로 사용해 최종 답변 a를 생성한다. (가상 문서 임베딩만 사용; 원 쿼리 임베딩은 검색에 사용하지 않음)
-- [장문 맥락에서 LLM이 중요한 정보를 놓치는 현상을 분석한 RAG 성능 개선 참고 논문](https://arxiv.org/abs/2305.14283)
+- [LLM 재작성기와 강화학습으로 검색 쿼리를 최적화하는 Rewrite-Retrieve-Read 프레임워크 논문](https://arxiv.org/abs/2305.14283)
   - sources: `LLM_011_Query_Expansion.ipynb`
   - agent: `A02`
-  - cross_ref: 실행 단계 [Phase 2 평가 하네스](PLAN.md#execution-phases) · [Phase 3 검색 개선](PLAN.md#execution-phases) · 관련 논문 [#04 RAG Survey](#04-rag-survey-2405.07437)
-  - taxonomy: [[위치 인식 주입]] · Axis B
-  - key_idea: 이 논문은 긴 컨텍스트에서 정보 위치에 따른 성능 저하(U자형)를 보여주는 진단 연구이며, 신규 알고리즘을 제안하지 않는다.
-  - execution_conditions: 동일 질의/정답으로 근거 위치만 바꾼 평가셋, 위치별 정확도 측정, U자형 곡선 재현 실험.
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#01 HyDE](#01-hyde-2212.10496) · [#05 DMQR-RAG](#05-dmqr-rag)
+  - taxonomy: [[쿼리 재작성]] · Axis A
+  - key_idea: 기존 retrieve-then-read를 Rewrite-Retrieve-Read로 확장해, 소형 재작성기가 frozen LLM 리더의 피드백을 강화학습 보상으로 받아 검색 쿼리를 리더에 최적화된 형태로 변환한다.
+  - execution_conditions: 소형 trainable rewriter, frozen LLM reader, RL 보상(리더 응답 품질), 웹 검색 엔진 연동.
   - pseudocode_3lines:
-    - 1) 문서 C와 질의 q, 정답 y*를 고정한 뒤 근거 문단 위치 p만 앞/중간/뒤로 바꾼 평가 샘플들을 생성한다.
-    - 2) 각 샘플에서 모델 응답 y를 계산하고 정확도 acc(p)를 위치별로 집계한다.
-    - 3) acc(p) 곡선을 시각화해 middle 구간 성능 저하가 있는지 검증하고, 재배치/요약 전략의 필요성을 도출한다.
+    - 1) 입력 질의 q를 소형 재작성기 M_rw에 입력해 최적화된 검색 쿼리 q'를 생성한다.
+    - 2) q'로 검색 엔진에서 문서 D를 검색하고, frozen LLM 리더에 (q, D)를 입력해 답변 a를 생성한다.
+    - 3) 리더의 응답 품질을 보상 r로 변환해 M_rw를 강화학습으로 업데이트한다.
 - [RAG 성능 향상 전략을 벤치마킹할 수 있는 arXiv 연구 논문 초록 페이지](https://arxiv.org/abs/2310.11511)
   - sources: `LLM_025_LangGraph_SelfRAG.ipynb`
   - agent: `A03`
-  - cross_ref: 실행 단계 [Phase 4 생성 개선](PLAN.md#execution-phases) · 관련 논문 [#07 FiD](#07-fid-2007.01282) · [#08 CRAG](#08-crag-2401.15884)
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#07 FiD](#07-fid-2007.01282) · [#08 CRAG](#08-crag-2401.15884)
   - taxonomy: [[자기평가 검색]] · Axis A
   - key_idea: 모델이 retrieval 필요 여부와 근거 품질을 자기평가하며 생성/검색 루프를 동적으로 제어한다.
   - execution_conditions: reflection 토큰/헤드 구현, 단계별 라우팅 로직, 실패 시 fallback 경로.
@@ -59,7 +61,7 @@
 - [RAG 개선 아이디어 탐색에 유용한 최신 연구 논문 초록 페이지](https://arxiv.org/abs/2405.07437)
   - sources: `LLM_008_RAG_Evalution.ipynb`, `LLM_013_Generation_Metrics.ipynb`, `LLM_014_LLM-as-Judge-LangChain.ipynb`, `LLM_015_Langfuse_Evaluation.ipynb`
   - agent: `A04`
-  - cross_ref: 다이어그램 [#08 RAG 평가 파이프라인](IMAGE_STRUCTURE_GRAPHS.md#08-rag-evaluationbenchmark-pipeline) · 실행 단계 [Phase 2 평가 하네스](PLAN.md#execution-phases) · 관련 논문 [#02 Lost in the Middle](#02-lost-in-the-middle-2305.14283)
+  - cross_ref: 다이어그램 [#08 RAG 평가 파이프라인](../../../gemini/IMAGE_STRUCTURE_GRAPHS.md#08-rag-evaluationbenchmark-pipeline) · 실행 단계 [Phase 2 평가 하네스](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#02 Lost in the Middle](#02-lost-in-the-middle-2305.14283)
   - taxonomy: [[RAG 평가 파이프라인]] · [[압축 주입]] · Axis B
   - key_idea: 검색-응답 품질을 단일 점수 대신 다중 축(정확성/근거성/관련성)으로 평가해 회귀를 줄인다.
   - execution_conditions: 평가셋 정답/근거 준비, 자동 평가 파이프라인, metric gate 임계치 정의.
@@ -70,7 +72,7 @@
 - [다중 질의 재작성으로 검색·응답 성능을 높이는 DMQR-RAG 논문](https://arxiv.org/abs/2411.13154)
   - sources: `LLM_011_Query_Expansion.ipynb`
   - agent: `A05`
-  - cross_ref: 다이어그램 [#03 Multi-Query/RAG-Fusion](IMAGE_STRUCTURE_GRAPHS.md#03-multi-query--rag-fusion--dmqr-rag) · 실행 단계 [Phase 3 검색 개선](PLAN.md#execution-phases) · 관련 논문 [#01 HyDE](#01-hyde-2212.10496)
+  - cross_ref: 다이어그램 [#03 Multi-Query/RAG-Fusion](../../../gemini/IMAGE_STRUCTURE_GRAPHS.md#03-multi-query--rag-fusion--dmqr-rag) · 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#01 HyDE](#01-hyde-2212.10496)
   - taxonomy: [[쿼리 확장 검색]] · Axis A
   - key_idea: 한 질의를 여러 관점 질의로 분해/재작성해 검색 후보 다양성과 커버리지를 확장한다.
   - execution_conditions: query rewrite 프롬프트 템플릿, 중복 제거/합치기 전략, latency 예산 관리.
@@ -79,25 +81,25 @@
     - 1) 입력 질의 q에 대해 전략집합 S={일반재작성, 키워드재작성, 의사답변재작성, 핵심내용추출재작성}을 정의하고, 선택기 g(q)로 사용할 전략 부분집합 S*를 고른다.
     - 2) 각 s∈S*에 대해 재작성 질의 q_s←Rewrite(q,s)를 생성하고, 모든 q_s로 병렬 검색해 문서 후보 D를 수집한 뒤 중복 제거·재순위화한다.
     - 3) 상위 문서 D_top과 원질의 q를 LLM에 입력해 최종 답변 a를 생성하고, 성능/비용 신호로 g와 재작성 프롬프트를 주기적으로 업데이트한다.
-- [RAG 성능 향상을 위한 검색-생성 결합 방법과 평가 관점을 정리한 참고 논문](https://arxiv.org/pdf/2205.10625)
+- [복잡한 문제를 부분 문제로 순차 분해해 LLM의 추론 일반화를 가능하게 하는 Least-to-Most 프롬프팅 논문](https://arxiv.org/pdf/2205.10625)
   - sources: `LLM_011_Query_Expansion.ipynb`
   - agent: `A06`
-  - cross_ref: 실행 단계 [Phase 1 베이스라인](PLAN.md#execution-phases)
-  - taxonomy: [[단일 벡터 검색]] · Axis A (baseline)
-  - key_idea: 생성 모델 단독보다 외부 비지식 메모리(검색) 결합이 사실성/최신성에서 유리함을 체계적으로 제시한다.
-  - execution_conditions: 검색 인덱스 품질, 도메인별 문서 최신화, 생성 단계 인용 규칙 설정.
-  - note: 수식 중심 RAG 공식화는 Lewis et al. (2020) 계열과 겹친다. 본 항목은 구현 관점의 개념 요약으로 사용한다.
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#02 Query Rewriting](#02-query-rewriting-2305.14283) · [#05 DMQR-RAG](#05-dmqr-rag)
+  - taxonomy: [[쿼리 분해 프롬프팅]] · Axis A
+  - key_idea: 복잡한 질의를 점점 간단한 부분 문제로 분해한 뒤 순차적으로 해결하며, 앞서 해결한 하위 문제의 답변을 다음 단계 컨텍스트로 활용해 어려운 문제로의 일반화 성능을 높인다.
+  - execution_conditions: 문제 분해 프롬프트 템플릿, 순차 해결 프롬프트, few-shot 예시, 하위 문제 의존성 관리.
+  - note: RAG 쿼리 분해 전략(질의를 하위 질의로 쪼개 각각 검색)의 프롬프팅 이론적 기반으로 참조한다.
   - pseudocode_3lines:
-    - 1) 질의 q로 검색기에서 상위 k 문서 D를 가져오고, 문서별 관련도 점수 w를 계산한다.
-    - 2) 생성기는 (q, D, w)를 입력으로 근거 우선 컨텍스트를 구성해 응답 후보를 생성한다.
-    - 3) 후보 응답을 근거 일치도와 정답성으로 재평가해 최종 출력 y를 선택한다.
+    - 1) 복잡한 입력 질의 q를 LLM에 입력해 부분 문제 목록 [s1, s2, ..., sn]으로 분해한다. (least-to-most 분해 단계)
+    - 2) 각 부분 문제 si를 순차적으로 해결하고, 이전 답변 [a1...a_{i-1}]을 컨텍스트로 포함해 LLM으로 ai를 생성한다.
+    - 3) 최종 부분 문제 sn의 답변 an을 최종 출력으로 반환하고, 필요 시 전체 추론 체인을 검증한다.
 - [여러 검색 문서를 디코더에서 통합 처리해 오픈도메인 QA 성능을 높이는 FiD 논문](https://arxiv.org/abs/2007.01282)
   - sources: `LLM_012_Rerank_Compression.ipynb`
   - agent: `A07`
-  - cross_ref: 실행 단계 [Phase 4 생성 개선](PLAN.md#execution-phases) · 관련 논문 [#03 Self-RAG](#03-self-rag-2310.11511) · [#08 CRAG](#08-crag-2401.15884)
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#03 Self-RAG](#03-self-rag-2310.11511) · [#08 CRAG](#08-crag-2401.15884)
   - taxonomy: [[압축 주입]] · Axis B
   - note: #03(Self-RAG abstract)과 동일 논문 중복 방지를 위해 교체. FiD는 multi-doc 검색-생성 결합의 기초 참조 논문.
-  - key_idea: 각 검색 문서를 독립적으로 인코딩 후 디코더에서 하나의 어텐션 소스로 통합해, 문서 수 증가에도 메모리 효율을 유지한다.
+  - key_idea: 각 검색 구절을 독립 인코딩 후 디코더에서 단일 어텐션 소스로 통합(Fusion-in-Decoder)하며, 검색 구절 수가 늘수록 성능이 비례해 향상됨을 실험으로 입증한다.
   - execution_conditions: dense retriever(DPR 등), 문서별 독립 인코딩, seq2seq 생성기, GPU 메모리 예산 관리.
   - pseudocode_3lines:
     - 1) 질의 q로 상위 k 문서 {d1…dk}를 검색하고, 각 [q;di] 쌍을 인코더에 독립적으로 입력해 k개 표현을 얻는다.
@@ -106,7 +108,7 @@
 - [RAG 성능 개선과 평가 방법을 다루는 최신 연구 논문 PDF 자료](https://arxiv.org/pdf/2401.15884)
   - sources: `LLM_026_LangGraph_CRAG.ipynb`
   - agent: `A08`
-  - cross_ref: 실행 단계 [Phase 4 생성 개선](PLAN.md#execution-phases) · 관련 논문 [#03 Self-RAG](#03-self-rag-2310.11511) · [#07 FiD](#07-fid-2007.01282)
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#03 Self-RAG](#03-self-rag-2310.11511) · [#07 FiD](#07-fid-2007.01282)
   - taxonomy: [[교정 검색]] · Axis A
   - key_idea: retrieval 결과를 사전 검증/보정(corrective)해 나쁜 문맥 유입을 줄이고 답변 신뢰도를 높인다.
   - execution_conditions: retrieval quality classifier, low-quality 분기(web/alt retriever), 검증 실패시 abstain 정책.
@@ -114,8 +116,137 @@
     - 1) d←검색기질의(q); s←관련성평가기(q,d); if s<τ then d←d∪웹검색(q)
     - 2) c←지식정제기(q,d)  # 오프토픽/오류 문서 제거 및 핵심 근거만 압축
     - 3) a←생성기(q,c); return a
+- [강화학습으로 추론-검색을 단계적으로 학습해 RAG 성능을 높이는 R3-RAG 논문](https://arxiv.org/abs/2505.23794)
+  - sources: `LLM_011_Query_Expansion.ipynb`, `plans/codex/eval_step_by_step_retrieval.py`
+  - agent: `A09`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#02 Query Rewriting](#02-query-rewriting-2305.14283) · [#08 CRAG](#08-crag-2401.15884)
+  - taxonomy: [[단계형 검색-추론]] · [[강화학습 기반 RAG]] · Axis A
+  - key_idea: LLM이 고정 워크플로우를 따르는 대신, 추론과 검색을 번갈아 수행하는 궤적 자체를 보상 기반으로 학습해 더 관련성 높은 문서를 찾고 정답률을 높인다.
+  - execution_conditions: 2단계 학습(콜드스타트 SFT + RL), outcome/process reward 설계, 검색 API 액션 인터페이스, trajectory 롤아웃 비용 관리.
+  - pseudocode_3lines:
+    - 1) 질문 q를 입력받아 모델이 `reason -> retrieve -> reason -> retrieve` 형태의 다단계 trajectory를 생성한다.
+    - 2) 최종 답 정확도(outcome reward)와 단계별 문서 관련성(process reward)로 trajectory를 평가한다.
+    - 3) RL 업데이트로 policy를 개선해, 다음 에피소드에서 더 유효한 중간 검색 질의와 근거 문서를 선택하도록 학습한다.
+- [검색·생성 단계의 지식 표현을 분리해 성능과 효율을 함께 높이는 HeteRAG 논문](https://arxiv.org/abs/2504.10529)
+  - sources: `LLM_011_Query_Expansion.ipynb`, `plans/codex/algorithms/eval_html_advanced_retrieval.py`, [HeteRAG 구현 코드](https://anonymous.4open.science/r/HeteRAG/**)
+  - agent: `A10`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#07 FiD](#07-fid-2007.01282) · [#08 CRAG](#08-crag-2401.15884) · [#09 R3-RAG](#09-r3-rag-2505.23794) · 구현 참고 [Late Chunking](https://github.com/jina-ai/late-chunking)
+  - taxonomy: [[이질적 표현 분리]] · [[계층/다중맥락 검색]] · Axis A
+  - key_idea: retrieval에는 메타데이터+다중 granularity 문맥을 붙인 표현을 쓰고, generation에는 짧고 독립적인 chunk를 써서 검색 정확도와 생성 효율을 동시에 개선한다.
+  - execution_conditions: retrieval/generation 입력 표현 분리 파이프라인, 메타데이터(제목/섹션/키워드) 추출, multi-granular context 구성(인접 chunk·상위 구조), retriever 적응 튜닝(adaptive prompt/fine-tune).
+  - pseudocode_3lines:
+    - 1) 코퍼스 chunk C_i에 대해 retrieval 표현 `R_i = embed(C_i + context_i + metadata_i)`와 generation 표현 `G_i = short_chunk(C_i)`를 분리해 구축한다.
+    - 2) 질의 q로 `R_i` 공간에서 top-k를 검색하고, 필요 시 adaptive prompt tuning으로 retriever를 도메인/구조 특성에 맞게 보정한다.
+    - 3) 선택된 후보의 `G_i`만 LLM 컨텍스트로 주입해 답변 a를 생성한다. (검색 표현과 생성 주입 표현을 분리 운영)
+- [지식 유도 추론과 반복 검색으로 LRMs의 사실성을 높이는 ReaRAG 논문](https://arxiv.org/abs/2503.21729)
+  - sources: `LLM_011_Query_Expansion.ipynb`, `plans/codex/algorithms/eval_step_by_step_retrieval.py`
+  - agent: `A11`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#08 CRAG](#08-crag-2401.15884) · [#09 R3-RAG](#09-r3-rag-2505.23794) · [#10 HeteRAG](#10-heterag-2504.10529)
+  - taxonomy: [[단계형 검색-추론]] · [[반복 검색 기반 사실성 강화]] · Axis A
+  - key_idea: LRM이 추론 중 `Search/Finish` 액션을 반복 선택하며 외부 검색 결과를 관찰값으로 누적하고, 길이 제한된 추론 궤적으로 과도한 반복을 줄여 factuality를 높인다.
+  - execution_conditions: 액션 공간(Search, Finish) 설계, 반복 검색 루프(Thought-Action-Observation), 추론 체인 길이 상한, 멀티홉 QA 기준 평가셋.
+  - pseudocode_3lines:
+    - 1) 질문 q에 대해 LRM이 현재 추론 상태에서 액션 `a_t ∈ {Search, Finish}`를 선택한다.
+    - 2) `a_t=Search`이면 쿼리 q_t를 생성해 RAG 엔진 검색 결과 o_t를 받고, `state ← update(state, o_t)`로 추론을 갱신한다.
+    - 3) `a_t=Finish`이거나 단계 상한 T에 도달하면 종료하고, 누적된 관찰 기반 최종 답변을 생성한다.
+- [이질 노드 기반 그래프 인덱싱으로 멀티홉 검색을 강화하는 NodeRAG 논문](https://arxiv.org/abs/2504.11544)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A12`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#10 HeteRAG](#10-heterag-2504.10529) · [#13 HyperGraphRAG](#13-hypergraphrag-2503.21322)
+  - taxonomy: [[graph-based rag]] · [[heterogeneous nodes]] · Axis A
+  - key_idea: 텍스트/표/이미지 등 이질 노드를 그래프로 구성해 타입 인지형 경로 검색으로 멀티홉 근거 회수를 강화한다.
+  - execution_conditions: 문서 파싱으로 이질 노드 생성, 타입 인지 그래프 인덱스 구축, 경로 기반 검색/재순위화.
+  - pseudocode_3lines:
+    - 1) 문서를 노드 타입별로 분해해 그래프와 관계 엣지를 구축한다.
+    - 2) 질의에 대해 타입 제약을 반영한 그래프 경로 검색을 수행한다.
+    - 3) 회수된 경로 근거를 컨텍스트로 답변을 생성한다.
+- [하이퍼그래프로 n-항 관계를 모델링하는 HyperGraphRAG 논문](https://arxiv.org/abs/2503.21322)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A13`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#12 NodeRAG](#12-noderag-2504.11544)
+  - taxonomy: [[hypergraph rag]] · [[multi-hop reasoning]] · Axis A
+  - key_idea: 이항 엣지 대신 하이퍼엣지로 복합 관계를 표현해 메시지 전달 기반으로 더 풍부한 컨텍스트를 회수한다.
+  - execution_conditions: 하이퍼엣지 추출 파이프라인, 하이퍼그래프 메시지 패싱, 경로 근거 검증.
+  - pseudocode_3lines:
+    - 1) 개체/개념 집합으로 하이퍼엣지를 구축한다.
+    - 2) 하이퍼그래프 메시지 패싱으로 노드 표현을 업데이트한다.
+    - 3) 질의 관련 하이퍼경로를 회수해 생성 단계에 주입한다.
+- [MCTS로 검색·추론 액션을 탐색하는 MCTS-RAG 논문](https://arxiv.org/abs/2503.20757)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A14`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#11 ReaRAG](#11-rearag-2503.21729)
+  - taxonomy: [[search policy]] · [[reasoning-time planning]] · Axis A
+  - key_idea: Monte Carlo Tree Search로 retrieve/generate 액션 트리를 탐색해 복잡 질의의 중간 의사결정을 최적화한다.
+  - execution_conditions: 상태/액션 정의, rollout 보상 설계, 트리 탐색 예산 관리.
+  - pseudocode_3lines:
+    - 1) 현재 추론 상태를 노드로 하는 탐색 트리를 확장한다.
+    - 2) MCTS로 retrieve/generate 액션을 선택·시뮬레이션한다.
+    - 3) 보상을 역전파해 다음 액션 정책을 갱신한다.
+- [공유 패시지 저장소 기반 협업형 RAG를 제안하는 CoRAG 논문](https://arxiv.org/abs/2504.01883)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A15`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#12 NodeRAG](#12-noderag-2504.11544)
+  - taxonomy: [[collaborative rag]] · [[shared passage store]] · Axis A
+  - key_idea: 다중 클라이언트가 공유 패시지 스토어와 협업 학습을 통해 회수 품질을 점진 개선한다.
+  - execution_conditions: 공유 스토어 동기화, 분산 업데이트, 개인정보/로컬 데이터 경계 관리.
+  - pseudocode_3lines:
+    - 1) 각 클라이언트가 로컬 근거를 공유 스토어에 반영한다.
+    - 2) 질의 시 로컬+공유 근거를 함께 검색한다.
+    - 3) 협업 업데이트로 리트리버를 주기적으로 보정한다.
+- [질문 유형 분해로 비정형 질의를 다루는 Typed-RAG 논문](https://arxiv.org/abs/2503.15879)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A16`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#10 HeteRAG](#10-heterag-2504.10529)
+  - taxonomy: [[type-aware retrieval]] · [[query decomposition]] · Axis A
+  - key_idea: 질문을 유형(비교/경험/논의 등)으로 분류하고 하위 질의로 분해해 근거 회수 커버리지를 높인다.
+  - execution_conditions: 질문 분류기, 유형별 분해 규칙, 하위 질의 결과 통합 로직.
+  - pseudocode_3lines:
+    - 1) 입력 질의를 타입 분류기로 라벨링한다.
+    - 2) 타입 규칙으로 하위 질의를 생성해 각각 검색한다.
+    - 3) 하위 근거를 통합해 최종 답변을 생성한다.
+- [상충 근거를 다중 에이전트 토론으로 정제하는 RAG with Conflicting Evidence 논문](https://arxiv.org/abs/2504.13079)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A17`
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#18 HM-RAG](#18-hm-rag-2504.12330)
+  - taxonomy: [[multi-agent debate]] · [[conflict resolution]] · Axis B
+  - key_idea: 에이전트 간 토론과 집계기로 상충·노이즈 근거를 제거해 응답 일관성과 사실성을 높인다.
+  - execution_conditions: 다중 에이전트 오케스트레이션, 라운드 기반 토론 프로토콜, 집계기 평가 기준.
+  - pseudocode_3lines:
+    - 1) 에이전트들이 독립적으로 근거 회수·초안 응답을 생성한다.
+    - 2) 토론 라운드에서 상충 주장과 근거를 교차 검증한다.
+    - 3) 집계기가 최종 근거 집합과 답변을 선택한다.
+- [계층형 멀티에이전트·멀티모달 파이프라인인 HM-RAG 논문](https://arxiv.org/abs/2504.12330)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A18`
+  - cross_ref: 실행 단계 [Phase 4 생성 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#17 RAG with Conflicting Evidence](#17-rag-with-conflicting-evidence-2504.13079)
+  - taxonomy: [[hierarchical multi-agent]] · [[multimodal retrieval]] · Axis B
+  - key_idea: 질의 분해기·멀티모달 회수기·응답 정제기를 계층적으로 분리해 복합 질의 대응력을 높인다.
+  - execution_conditions: 에이전트 간 역할 분리, 모달리티별 검색기, 최종 통합/정제 단계.
+  - pseudocode_3lines:
+    - 1) 질의를 하위 질의/모달리티로 분해한다.
+    - 2) 텍스트·그래프·웹 등 각 모달리티에서 병렬 회수한다.
+    - 3) 통합 정제 에이전트가 최종 답변을 생성한다.
+- [인과 그래프 피드백으로 질의를 적응시키는 CDF-RAG 논문](https://arxiv.org/abs/2504.12560)
+  - sources: `RAG 기반 최신 기법들.pdf`
+  - agent: `A19`
+  - cross_ref: 실행 단계 [Phase 3 검색 개선](../../../gemini/PLAN.md#execution-phases) · 관련 논문 [#11 ReaRAG](#11-rearag-2503.21729)
+  - taxonomy: [[causal reasoning]] · [[adaptive retrieval]] · Axis A
+  - key_idea: 인과 그래프 기반 동적 피드백으로 질의를 정제하고 인과 경로 검증으로 응답 신뢰도를 높인다.
+  - execution_conditions: 인과 그래프 구축, 경로 기반 검색, 응답-인과경로 정합성 검사.
+  - pseudocode_3lines:
+    - 1) 인과 그래프를 구축해 질의와 관련된 인과 경로를 찾는다.
+    - 2) 피드백에 따라 질의를 동적으로 재정제하며 검색한다.
+    - 3) 인과 경로와의 일치 여부로 답변을 검증한다.
 
 ## Other RAG References URLs
+- [Multi-hop/Answerable/Abstention 평가 전용 URL 인덱스](./MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md)
+  - sources: `docs/knowledge/MULTIHOP_EVAL_URL_KNOWLEDGE_BASE_2026-03-11-00-52.md`
+  - agent: `codex`
+  - pseudocode_3lines:
+    - 1) 멀티홉·근거충분성·abstain 관련 URL을 단일 문서에서 조회한다.
+    - 2) 실험 목적(검색/판별/거절)에 맞는 논문/코드를 선택한다.
+    - 3) 선택 리소스를 실험 계획과 평가 지표 정의에 반영한다.
+
 - [KRX ETF 상세검색 통계 화면으로 금융 도메인 RAG용 기준 데이터 수집에 활용 가능](http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC020103010901)
   - sources: `LLM_020_ETF_Text2SQL.ipynb`
   - agent: `A01`
@@ -347,3 +478,15 @@
     - 1) 링크 리소스에서 핵심 규칙/패턴을 추출해 실험 가설 H를 정의한다.
     - 2) H를 현재 RAG 파이프라인의 한 단계(검색/평가/생성)에 적용해 A/B 비교한다.
     - 3) 개선이 확인되면 설정을 표준화하고 회귀 테스트 케이스로 고정한다.
+
+- [Late Chunking 구현 코드베이스 (Jina AI)로 long-context 임베딩/청킹 전략 검증에 유용](https://github.com/jina-ai/late-chunking)
+  - sources: `user_provided_url_2026-03-06`
+  - agent: `codex`
+  - cross_ref: 관련 논문 [#10 HeteRAG](#10-heterag-2504.10529)
+  - note: HeteRAG의 `retrieval 표현(확장 문맥) / generation 표현(짧은 청크) 분리` 아이디어를 구현 실험으로 검증할 때, long-context 후처리 청킹 비교 기준으로 활용 가능.
+  - pseudocode_3lines:
+    - 1) 긴 문서를 먼저 인코딩한 뒤 chunk 단위 표현을 후처리로 추출한다.
+    - 2) 일반 chunk-first 임베딩과 검색 성능(Recall/Precision) 및 비용을 비교한다.
+    - 3) 블로그 코퍼스에 맞는 chunk granularity를 선택해 파이프라인에 반영한다.
+
+---
