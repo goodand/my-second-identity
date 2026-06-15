@@ -94,7 +94,7 @@ def retrieve_candidates(
             mode=mode,
             query=query,
             candidates=result["search_results"],
-            hyde_variant=hyde_variant,
+            hyde_variant=result["hyde_variant"],
             hypo_used=result["hypo_used"],
             hypo_text_hash=result["hypo_text_hash"],
             metadata={"k": k},

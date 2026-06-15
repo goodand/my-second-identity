@@ -9,6 +9,8 @@ __pycache__/
 venv/
 *.egg-info/
 .pytest_cache/
+.ipynb_checkpoints/
+.cache/
 datasets/
 
 # Local runtime/control artifacts
@@ -19,13 +21,11 @@ tmp/
 # Experiment-generated outputs and caches
 plans/codex/test_result/
 plans/codex/models/
-plans/codex/**/.cache/
 plans/codex/**/cache/
 plans/codex/**/checkpoints/
 
 # Local vector/model stores
-local_chroma_db*/
-chroma_db*/
+*chroma_db*/
 *.sqlite
 *.sqlite3
 *.db

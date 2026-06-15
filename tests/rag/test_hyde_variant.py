@@ -57,6 +57,12 @@ class TestPaperVariant:
         assert result["hypo_text_hash"] == expected_hash, \
             "paper variant는 hypo_text_hash를 MD5[:8]로 기록해야 한다"
 
+    def test_resolved_variant_is_returned(self):
+        with patch(_PATCH_HYPO, return_value=FAKE_HYPO):
+            state = _make_state(hyde_variant="paper")
+            result = hyde_search(state)
+        assert result["hyde_variant"] == "paper"
+
     def test_search_uses_hypo_doc(self):
         """검색 쿼리가 원본 질문이 아닌 hypo_doc 이어야 한다"""
         with patch(_PATCH_HYPO, return_value=FAKE_HYPO):
@@ -88,6 +94,11 @@ class TestSubqueryVariant:
         assert result["hypo_text_hash"] is None, \
             "subquery variant는 hypo_text_hash가 None 이어야 한다"
 
+    def test_resolved_variant_is_returned(self):
+        state = _make_state(hyde_variant="subquery")
+        result = hyde_search(state)
+        assert result["hyde_variant"] == "subquery"
+
     def test_search_uses_original_query(self):
         state = _make_state(hyde_variant="subquery", user_query="원본 질문")
         hyde_search(state)
@@ -110,6 +121,14 @@ class TestDefaultVariant:
             state.pop("hyde_variant", None)  # type: ignore[misc]
             result = hyde_search(state)
         assert result["hypo_used"] is True, "기본 variant는 paper(hypo_used=True)여야 한다"
+        assert result["hyde_variant"] == "paper"
+
+
+class TestInvalidVariant:
+    def test_unknown_variant_raises(self):
+        state = _make_state(hyde_variant="papre")
+        with pytest.raises(ValueError, match="Unsupported hyde_variant"):
+            hyde_search(state)
 
 
 # ── Red 4: RAGState 필드 존재 확인 ──────────────────────────────────────────
