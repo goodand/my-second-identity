@@ -25,6 +25,16 @@
       "verification": "plans/claude, plans/gemini, plans/codex/docs, plans/codex/research, and plans/codex/image-arch are checked."
     },
     {
+      "id": "G-FORBIDDEN-ARTIFACTS",
+      "statement": "runtime, cache, log, local database, and secret-like files are excluded from tracked release scope.",
+      "verification": "Tracked files are checked against excluded_scope globs and ignore-rule markers."
+    },
+    {
+      "id": "G-STALE-LINKS",
+      "statement": "moved planning documents do not retain known stale relative links or old canonical paths.",
+      "verification": "Moved planning documents are checked for stale path patterns."
+    },
+    {
       "id": "G-RELEASE-GATE",
       "statement": "scope can be validated by code with a deterministic pass/fail result.",
       "verification": "scripts/release/validate_remote_release_gate.py validates this contract."
@@ -54,6 +64,10 @@
     {
       "id": "NG-METRIC-REDEFINITION",
       "statement": "Do not change RAG metric definitions in this release gate."
+    },
+    {
+      "id": "NG-VALIDATOR-AUTO-LOOP",
+      "statement": "Do not make the validator auto-loop or mutate repository files; it must stay deterministic and non-mutating."
     }
   ],
   "included_scope": [
@@ -191,19 +205,39 @@
   "gates": [
     {
       "id": "GATE-CONTRACT-SHAPE",
-      "type": "contract_shape"
+      "type": "contract_shape",
+      "goal_ids": [
+        "G-RELEASE-GATE"
+      ]
     },
     {
       "id": "GATE-REQUIRED-PATHS",
-      "type": "required_paths_exist"
+      "type": "required_paths_exist",
+      "goal_ids": [
+        "G-RAG-CODE",
+        "G-CHROMA-CONFIG",
+        "G-HYDE-PROVENANCE",
+        "G-PLANS-REORG",
+        "G-RELEASE-GATE"
+      ]
     },
     {
       "id": "GATE-FORBIDDEN-TRACKED",
-      "type": "forbidden_tracked_absent"
+      "type": "forbidden_tracked_absent",
+      "goal_ids": [
+        "G-FORBIDDEN-ARTIFACTS"
+      ]
     },
     {
       "id": "GATE-REQUIRED-HISTORY",
       "type": "required_subjects_in_history",
+      "goal_ids": [
+        "G-RAG-CODE",
+        "G-CHROMA-CONFIG",
+        "G-HYDE-PROVENANCE",
+        "G-PLANS-REORG",
+        "G-RELEASE-GATE"
+      ],
       "subjects": [
         "feat: add HyDE provenance candidate bundle",
         "chore: make Chroma path configurable",
@@ -215,6 +249,11 @@
     {
       "id": "GATE-FILE-CONTAINS",
       "type": "file_contains",
+      "goal_ids": [
+        "G-CHROMA-CONFIG",
+        "G-HYDE-PROVENANCE",
+        "G-FORBIDDEN-ARTIFACTS"
+      ],
       "files": {
         "configs/rag.yaml": [
           "persist_directory_env",
@@ -230,6 +269,23 @@
           "Unsupported hyde_variant",
           "\"hyde_variant\": variant"
         ],
+        "src/rag/candidates.py": [
+          "class CandidateBundle",
+          "\"retrieval_k\": k",
+          "hyde_variant=result[\"hyde_variant\"]"
+        ],
+        "tests/rag/test_bootstrap_config.py": [
+          "test_init_vectorstore_resolves_config_default_path_from_repo_root",
+          "test_init_vectorstore_uses_absolute_env_path_override"
+        ],
+        "tests/rag/test_hyde_variant.py": [
+          "test_unknown_variant_raises",
+          "test_search_uses_retrieval_k"
+        ],
+        "tests/rag/test_candidate_bundle.py": [
+          "test_invalid_hyde_variant_raises",
+          "test_k_is_forwarded_to_vector_search"
+        ],
         ".gitignore": [
           ".ipynb_checkpoints/",
           ".cache/",
@@ -240,6 +296,10 @@
     {
       "id": "GATE-NO-STALE-PLAN-LINKS",
       "type": "no_stale_text_patterns",
+      "goal_ids": [
+        "G-PLANS-REORG",
+        "G-STALE-LINKS"
+      ],
       "paths": [
         "plans/claude/CLAUDE_REVIEW_REQUEST.md",
         "plans/gemini/PLAN.md",

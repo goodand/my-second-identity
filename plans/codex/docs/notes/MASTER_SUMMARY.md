@@ -18,7 +18,7 @@
 | 문서 | 역할 |
 |------|------|
 | `MASTER_SUMMARY.md` (이 파일) | 워크스페이스 전체 P0/P1/P2 리스크 진단 |
-| [DECISION_DESIGN_SPEC_v1.md](DECISION_DESIGN_SPEC_v1.md) | RAG 성능 최적화 실험의 의사결정/설계 원칙 고정본 |
+| `DECISION_DESIGN_SPEC_v1.md` | RAG 성능 최적화 실험의 의사결정/설계 원칙 고정본. Current remote release does not track this companion file. |
 | [PLAN.md](../../../gemini/PLAN.md) | RAG 업그레이드 실행 계획 · 5단계 · 8에이전트 |
 | [RAG_URL_KNOWLEDGE_BASE.md](../knowledge/RAG_URL_KNOWLEDGE_BASE.md) | 논문 19편 + 참고 URL 33개 인덱스 |
 | [IMAGE_STRUCTURE_GRAPHS.md](../../../gemini/IMAGE_STRUCTURE_GRAPHS.md) | RAG 아키텍처 다이어그램 8개 |

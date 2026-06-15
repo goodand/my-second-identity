@@ -85,7 +85,7 @@ RAG 시스템을 실험형 노트북 단계에서 운영 가능한 평가-개선
 
 ### Protocol
 1. URL shard 분할: `plans/rag-upgrade/agents/urls-agent-0X.txt`
-2. 병렬 실행: `- [한 줄 설명](URL)` 형식 강제
+2. 병렬 실행: `- [한 줄 설명]({URL})` 형식 강제
 3. 병합: 단일 기준 문서 `../codex/docs/knowledge/RAG_URL_KNOWLEDGE_BASE.md` 업데이트
 4. 검수: 중복/깨진 링크/의미 없는 설명 제거
 5. 버전 규칙: `major` 구조 변경, `minor` 분류 추가, `patch` 링크/오탈자

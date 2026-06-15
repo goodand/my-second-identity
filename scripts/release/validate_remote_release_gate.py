@@ -118,7 +118,36 @@ def check_contract_shape(gate: dict[str, Any], contract: dict[str, Any], repo: P
         for idx, item in enumerate(contract.get(key, [])):
             if not isinstance(item, dict) or not item.get("id"):
                 unnamed_items.append(f"{key}[{idx}]")
-    details = missing + [f"empty_or_invalid:{key}" for key in empty_lists] + unnamed_items
+    duplicate_ids: list[str] = []
+    for key in ("goals", "non_goals", "included_scope", "excluded_scope", "gates"):
+        ids = [item.get("id") for item in contract.get(key, []) if isinstance(item, dict)]
+        duplicate_ids.extend(f"duplicate:{key}:{item_id}" for item_id in sorted(set(ids)) if ids.count(item_id) > 1)
+
+    goal_ids = {item.get("id") for item in contract.get("goals", []) if isinstance(item, dict) and item.get("id")}
+    gate_goal_errors: list[str] = []
+    referenced_goal_ids: set[str] = set()
+    for idx, item in enumerate(contract.get("gates", [])):
+        if not isinstance(item, dict):
+            continue
+        gate_goal_ids = item.get("goal_ids")
+        if not isinstance(gate_goal_ids, list) or not gate_goal_ids:
+            gate_goal_errors.append(f"gates[{idx}]: missing_or_empty_goal_ids")
+            continue
+        for goal_id in gate_goal_ids:
+            if goal_id not in goal_ids:
+                gate_goal_errors.append(f"gates[{idx}]: unknown_goal_id:{goal_id}")
+            else:
+                referenced_goal_ids.add(goal_id)
+    unreferenced_goals = [f"unreferenced_goal:{goal_id}" for goal_id in sorted(goal_ids - referenced_goal_ids)]
+
+    details = (
+        missing
+        + [f"empty_or_invalid:{key}" for key in empty_lists]
+        + unnamed_items
+        + duplicate_ids
+        + gate_goal_errors
+        + unreferenced_goals
+    )
     if details:
         return CheckResult(gate["id"], "fail", "contract shape is invalid", details)
     return CheckResult(gate["id"], "pass", "contract shape is valid", [])
@@ -127,9 +156,13 @@ def check_contract_shape(gate: dict[str, Any], contract: dict[str, Any], repo: P
 def check_required_paths_exist(gate: dict[str, Any], contract: dict[str, Any], repo: Path) -> CheckResult:
     paths = gate.get("paths") or all_included_paths(contract)
     missing = [path for path in paths if not repo_path(repo, path).exists()]
+    tracked = set(git_ls_files(repo))
+    untracked = [path for path in paths if path not in tracked]
     if missing:
         return CheckResult(gate["id"], "fail", "required paths are missing", missing)
-    return CheckResult(gate["id"], "pass", f"{len(paths)} required paths exist", [])
+    if untracked:
+        return CheckResult(gate["id"], "fail", "required paths exist but are not tracked", untracked)
+    return CheckResult(gate["id"], "pass", f"{len(paths)} required paths exist and are tracked", [])
 
 
 def check_forbidden_tracked_absent(gate: dict[str, Any], contract: dict[str, Any], repo: Path) -> CheckResult:
@@ -149,6 +182,8 @@ def check_forbidden_tracked_absent(gate: dict[str, Any], contract: dict[str, Any
 def check_required_subjects_in_history(gate: dict[str, Any], contract: dict[str, Any], repo: Path) -> CheckResult:
     del contract
     subjects = gate.get("subjects", [])
+    if not subjects:
+        return CheckResult(gate["id"], "pass", "no required commit subjects configured", [])
     history = set(git_log_subjects(repo))
     missing = [subject for subject in subjects if subject not in history]
     if missing:
