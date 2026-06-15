@@ -84,6 +84,7 @@ def retrieve_candidates(
             "user_query": query,
             "search_results": [],
             "final_answer": "",
+            "retrieval_k": k,
             "hyde_variant": hyde_variant,
             "hypo_used": False,
             "hypo_text_hash": None,

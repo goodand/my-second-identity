@@ -28,6 +28,7 @@ def _make_state(**kwargs) -> RAGState:
         "user_query": "테스트 질문",
         "search_results": [],
         "final_answer": "",
+        "retrieval_k": 3,
         "hyde_variant": "paper",
         "hypo_used": False,
         "hypo_text_hash": None,
@@ -64,6 +65,14 @@ class TestPaperVariant:
         call_args = graph_module.db_korean.similarity_search.call_args
         assert call_args[0][0] == FAKE_HYPO, \
             "paper variant는 hypo_doc으로 벡터 검색해야 한다"
+
+    def test_search_uses_retrieval_k(self):
+        """state.retrieval_k가 vector search k로 전달되어야 한다"""
+        with patch(_PATCH_HYPO, return_value=FAKE_HYPO):
+            state = _make_state(hyde_variant="paper", retrieval_k=7)
+            hyde_search(state)
+        call_args = graph_module.db_korean.similarity_search.call_args
+        assert call_args.kwargs["k"] == 7
 
 
 # ── Red 2: subquery variant → hypo_doc 생성 안 함 ───────────────────────────
@@ -116,3 +125,7 @@ class TestRAGStateFields:
     def test_state_has_hypo_text_hash_field(self):
         assert "hypo_text_hash" in RAGState.__annotations__, \
             "RAGState에 hypo_text_hash 필드가 있어야 한다"
+
+    def test_state_has_retrieval_k_field(self):
+        assert "retrieval_k" in RAGState.__annotations__, \
+            "RAGState에 retrieval_k 필드가 있어야 한다"

@@ -39,6 +39,7 @@ class RAGState(TypedDict):
     user_query: str
     search_results: List[str]
     final_answer: str
+    retrieval_k: Optional[int]       # vector search top-k override (default: 3)
     # P0: HyDE variant 정합 필드 (KB #01, REV_DECISION_STEP1)
     hyde_variant: Optional[str]      # "paper" | "subquery" (default: "paper")
     hypo_used: bool                  # paper variant 실행 시 True
@@ -96,7 +97,8 @@ def hyde_search(state: RAGState) -> RAGState:
         hypo_text_hash = None
 
     # 2) 벡터 검색
-    search_results = _search_or_empty(db_korean, search_query, k=3)
+    search_k = int(state.get("retrieval_k") or 3)
+    search_results = _search_or_empty(db_korean, search_query, k=search_k)
 
     return {
         "search_results": search_results,

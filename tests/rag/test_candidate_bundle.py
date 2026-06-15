@@ -105,6 +105,13 @@ class TestRetrieveCandidatesHydePaper:
             result = retrieve_candidates("hyde", "질문")
         assert result.hypo_used is True
 
+    def test_k_is_forwarded_to_vector_search(self):
+        """retrieve_candidates(k=...)는 metadata뿐 아니라 실제 검색 k도 바꿔야 한다."""
+        with patch(_PATCH_HYPO, return_value=FAKE_HYPO):
+            retrieve_candidates("hyde", "질문", k=7)
+        call_args = graph_module.db_korean.similarity_search.call_args
+        assert call_args.kwargs["k"] == 7
+
 
 # ── Red 3: retrieve_candidates — hyde subquery variant ───────────────────────
 class TestRetrieveCandidatesHydeSubquery:
