@@ -1,5 +1,6 @@
 vector_store:
-  persist_directory: /Users/jaehyuntak/Desktop/gangnam-1st/local_chroma_db
+  persist_directory: local_chroma_db
+  persist_directory_env: MSI_CHROMA_PERSIST_DIRECTORY
   embedding_model: text-embedding-3-small
   language: korean
 
